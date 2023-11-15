@@ -1,0 +1,56 @@
+:root {
+  --main-color: orange;
+  --color-white: #fff;
+  --color-green: rgb(0, 255, 117);
+  --color-light-green: rgb(239 251 247);
+  --color-grey: #e5e7eb;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+header {
+  width: 100%;
+  background-color: var(--color-light-green);
+}
+header nav {
+  display: flex;
+  height: 4rem;
+  justify-content: space-between;
+  align-items: center;
+}
+header nav .logo {
+  font-size: 2.5rem;
+  color: black;
+  margin-left: 2rem;
+}
+header nav .nav-list {
+  display: flex;
+  width: 300px;
+  justify-content: space-between;
+  margin-right: 2rem;
+}
+header nav .nav-list li {
+  list-style: none;
+}
+header nav .nav-list li a {
+  text-decoration: none;
+  color: black;
+}
+
+section {
+  padding: 8rem 1rem;
+}
+section h1 {
+  color: var(--main-color);
+}
+section .box .flex {
+  display: flex;
+}
+section .box .flex img {
+  margin-right: 1rem;
+}
+
+/*# sourceMappingURL=styles.css.map */
