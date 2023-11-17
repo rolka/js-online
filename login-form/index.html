@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact us</title>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.css">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <link rel="stylesheet" href="css/styles.css">
+
+    <meta name="google-signin-client_id" content="YOUR_CLIENT_ID.apps.googleusercontent.com">
+
+</head>
+<body>
+    
+    <main>
+        <section class="left">
+            <div class="left__content-wrap">
+                <img class="left__content-wrap__logo" src="images/pixelonium-logo.png" alt="pixelonium">
+                <p class="left__content-wrap__headline">We are an experience maker , we help you to have a better experience in visual communication</p>
+            </div>
+        </section>
+
+        <section class="right">
+            <div class="right__content-wrap">
+                <div class="right__content-wrap__headings">
+                    <h1 class="right__content-wrap__headings__heading">Sign in to Pixelonium</h1>
+                    <p class="right__content-wrap__headings__subheading">Login by Your Secure Account</p>
+                </div>
+                <div class="right__content-wrap__login-buttons">
+                    <div class="right__content-wrap__login-buttons__google-login-button">
+                        <div id="my-signin2"></div>
+                    </div>
+                    <div class="right__content-wrap__login-buttons__facebook-login-button">
+                        <i class="fa-brands fa-facebook"></i>
+                    </div>
+                </div>
+                <div class="right__content-wrap__separator">
+                    <p>Or</p>
+                </div>
+                <form action="">
+                    <div class="right__content-wrap__username-field">
+                        <i class="fa-solid fa-at"></i>
+                        <input type="text" name="" id="" placeholder="Username, Email or Phone Number">
+                    </div>
+                    <div class="right__content-wrap__forgot-password">
+                        <p>Forget password? <a href="#">Click here</a></p>
+                    </div>
+                    <div class="right__content-wrap__button-submit">
+                        <button>Continue</button>
+                    </div>
+                </form>
+                <div class="right__content-wrap__questions">
+                    <p>Questions? <br class="visible-mobile"> Email us at <a href="mailto:support@pixelonium.com">support@pixelonium.com</a></p>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <script>
+        function onSuccess(googleUser) {
+          console.log('Logged in as: ' + googleUser.getBasicProfile().getName());
+        }
+        function onFailure(error) {
+          console.log(error);
+        }
+        function renderButton() {
+          gapi.signin2.render('my-signin2', {
+            'scope': 'profile email',
+            'width': 240,
+            'height': 50,
+            'longtitle': true,
+            'theme': 'dark',
+            'onsuccess': onSuccess,
+            'onfailure': onFailure
+          });
+        }
+      </script>
+
+<script src="https://apis.google.com/js/platform.js?onload=renderButton" async defer></script>
+
+</body>
+</html>
