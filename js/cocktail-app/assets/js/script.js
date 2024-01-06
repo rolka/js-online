@@ -15,6 +15,23 @@ const categoriesArray = [];
 const drinksArray = [];
 const fillSelectElements = async () =>
 {
+    const allUrls = [
+        'https://www.thecocktaildb.com/api/json/v1/1/list.php?c=list',
+        'https://www.thecocktaildb.com/api/json/v1/1/list.php?g=list',
+        'https://www.thecocktaildb.com/api/json/v1/1/list.php?i=list'
+    ];
+
+    const allPromises = allUrls.map( url =>
+        fetch(url).then( (resp) => resp.json() )
+    );
+    const allValues = await Promise.all(allPromises);
+    const [ allCats, allGlasses, allIngredients] = allValues;
+
+    console.log(allCats);
+    console.log(allPromises);
+    console.log(allValues);
+
+    console.time('await');
     await fetch('https://www.thecocktaildb.com/api/json/v1/1/list.php?c=list')
         .then( (result) => result.json() )
         // .then( (result) => console.log(result) )
@@ -41,6 +58,8 @@ const fillSelectElements = async () =>
         .then( (result) => fillCategorySelect( result.drinks, ingredientSelectElement, 'strIngredient1' ) )
         .catch( (error) => console.log(error) )
         .finally( () => console.log('Request finished 3') )
+
+    console.timeEnd('await');
 }
 
 const fillCategorySelect = ( properties, selectElement, strFieldName ) =>
@@ -97,7 +116,9 @@ const init = async () =>
     await fillSelectElements();
     // console.log(categoriesArray);
 
+    console.time('getAllDrinks');
     await getAllDrinks();
+    console.timeEnd('getAllDrinks');
     console.log(drinksArray);
 
     generateDrinksHtml(drinksArray);
