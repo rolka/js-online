@@ -30,10 +30,123 @@
             </select>
             
             <button class="btn btn-outline-dark" type="submit" id="search">Search</button>
-            <button class="btn btn-outline-dark" type="submit" id="im-lucky">Feeling lucky</button>
+            <button class="btn btn-outline-dark" type="submit" id="im-lucky" onclick="openModal( event, 0 );">Feeling lucky</button>
         </form>
     </div>
 </nav>
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+    Launch static backdrop modal
+</button>
+
+
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+
+<!--            staticBackdropLabel-->
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="modal-drink-title">3-Mile Long Island Iced Tea</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="container-fluid">
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <img class="img-fluid" id="modal-drink-img" src="https://www.thecocktaildb.com/images/media/drink/rrtssw1472668972.jpg" alt="">
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-3">
+                        <div class="col-md-4">
+                            <p class="fw-bold m-0">Category:</p>
+                        </div>
+                        <div class="col-md-8">
+                            <p class="fst-italic m-0" id="modal-drink-category">Cocktail</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p class="fw-bold m-0">Alcohol:</p>
+                        </div>
+                        <div class="col-md-8">
+                            <p class="fst-italic m-0" id="modal-drink-alcoholic">Alcohol</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p class="fw-bold m-0">Glass:</p>
+                        </div>
+                        <div class="col-md-8">
+                            <p class="fst-italic m-0" id="modal-drink-glass">Glass</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p class="fw-bold m-0">Ingredients:</p>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="row">
+                                <div class="col-6">
+                                    <p class="fst-italic fw-bold m-0">Ing 1</p>
+                                </div>
+                                <div class="col-6">
+                                    <p class="fst-italic m-0">1 oz</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6">
+                                    <p class="fst-italic fw-bold m-0">Ing 2</p>
+                                </div>
+                                <div class="col-6">
+                                    <p class="fst-italic m-0">10 oz</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <p class="fw-bold m-0">Recipe:</p>
+                        </div>
+                        <div class="col-md-8">
+                            <p class="fst-italic m-0" id="modal-drink-instructions">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Illo, repellendus.</p>
+                        </div>
+                    </div>
+
+
+<!--                    <div class="row">-->
+<!--                        <div class="col-md-3 ms-auto">.col-md-3 .ms-auto</div>-->
+<!--                        <div class="col-md-2 ms-auto">.col-md-2 .ms-auto</div>-->
+<!--                    </div>-->
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Modal title</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Body Body Body Body </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Understood</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="container">
     <div class="row" id="cocktails-app">
@@ -49,8 +162,11 @@
             </div>
         </div>
     </div>
+
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
 <script src="assets/js/script.js"></script>
 </body>
 </html>

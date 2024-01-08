@@ -101,22 +101,43 @@ const fillCategorySelect = ( properties, selectElement, strFieldName ) =>
 
 const getAllDrinks = async (  ) =>
 {
-    // for ( let category of categoriesArray)
+    const categoryDrinksUrls = [];
     for ( let category of selectValues.categories)
     {
         let dynamicUrl = `https://www.thecocktaildb.com/api/json/v1/1/filter.php?c=${category.replaceAll( ' ', '_' )}`;
-        const response = await fetch(dynamicUrl);
-        const responseFromServer = await response.json();
+        // const response = await fetch(dynamicUrl);
+        // const responseFromServer = await response.json();
 
-        for ( const drink of responseFromServer.drinks )
-        {
-            drinksArray.push(drink);
-        }
+        categoryDrinksUrls.push(dynamicUrl);
+
+        // for ( const drink of responseFromServer.drinks )
+        // {
+        //     drinksArray.push(drink);
+        // }
+
         // drinksArray.push(responseFromServer);
         // console.log( category.replaceAll( ' ', '_' ) );
         // console.log( dynamicUrl );
         // console.log( responseFromServer.drinks );
     }
+
+    const allPromises = categoryDrinksUrls.map( (url) =>
+    {
+        return fetch(url).then( (resp) => resp.json() );
+    })
+
+    const allValues = await Promise.all(allPromises);
+
+    allValues.forEach( (drink) =>
+    {
+        // console.log(drink.drinks);
+        drinksArray.push( ...drink.drinks );
+    })
+
+    // console.log(allPromises);
+    // console.log(allValues);
+    console.log(drinksArray);
+
 }
 
 const generateDrinksHtml = (drinks) =>
@@ -124,7 +145,7 @@ const generateDrinksHtml = (drinks) =>
     let dynamicHtml = '';
     for ( const drink of drinks )
     {
-        dynamicHtml += `<div class="col-4 my-3">
+        dynamicHtml += `<div class="col-4 my-3" id="${drink.idDrink}" onclick="openModal( event, ${drink.idDrink} )">
             <div class="card">
                 <img src="${drink.strDrinkThumb}" class="card-img-top" alt="${drink.strDrink}">
                 <div class="card-body placeholder-glow">
@@ -136,6 +157,56 @@ const generateDrinksHtml = (drinks) =>
     cocktailAppHtml.innerHTML = dynamicHtml;
 }
 
+const openModal = async ( event, drinkId) =>
+{
+    event.preventDefault();
+    // console.log( event );
+    console.log( drinkId );
+    // console.log( isRandom );
+    // return;
+    let promise = {};
+    if ( drinkId !== 0 )
+    {
+        promise = await fetch(`https://www.thecocktaildb.com/api/json/v1/1/lookup.php?i=${drinkId}`);
+    }
+    else
+    {
+        promise = await fetch(`https://www.thecocktaildb.com/api/json/v1/1/random.php`);
+    }
+
+    const data = await promise.json();
+
+    // console.log(data.drinks[0].strCategory);
+
+    const singleDrink = data.drinks[0];
+    console.log( singleDrink );
+
+    const ingredients = [];
+    const measures = [];
+    for (const prop in singleDrink) {
+        if (prop.startsWith("strIngredient") && singleDrink[prop] !== null) {
+            ingredients.push(singleDrink[prop]);
+        } else if (prop.startsWith("strMeasure") && singleDrink[prop] !== null) {
+            measures.push(singleDrink[prop]);
+        }
+    }
+    console.log(ingredients);
+    console.log(measures);
+
+
+    const myModal = new bootstrap.Modal(document.getElementById('staticBackdrop'));
+    document.getElementById('modal-drink-img').src = singleDrink.strDrinkThumb;
+    document.getElementById('modal-drink-img').alt = singleDrink.strDrink;
+    document.getElementById('modal-drink-category').innerHTML = singleDrink.strCategory;
+    document.getElementById('modal-drink-alcoholic').innerHTML = singleDrink.strAlcoholic;
+    document.getElementById('modal-drink-glass').innerHTML = singleDrink.strGlass;
+    document.getElementById('modal-drink-title').innerHTML = singleDrink.strDrink;
+    document.getElementById('modal-drink-instructions').innerHTML = singleDrink.strInstructions;
+
+    myModal.show();
+    // alert(drinkId);
+}
+
 const filter = async (event) =>
 {
     event.preventDefault();
@@ -144,28 +215,76 @@ const filter = async (event) =>
     const glass = glassTypeSelectElement.value;
     const ingredient = ingredientSelectElement.value;
 
-    // const filteredArray = [...drinksArray];
+    let filteredArray = [...drinksArray];
 
     if ( searchValue )
     {
-        // const found = filteredArray.filter( (value) =>
-        const found = [...drinksArray].filter( (value) =>
+        console.log( `Search value: ${searchValue}` );
+
+        filteredArray = filteredArray.filter( (value) =>
+        // const found = [...drinksArray].filter( (value) =>
         {
             // return value.strDrink.toLowerCase() === searchValue.toLowerCase();
             return value.strDrink.toLowerCase().includes(searchValue.toLowerCase());
         })
-        generateDrinksHtml(found);
-        console.log(found);
+        // generateDrinksHtml(found);
+        generateDrinksHtml(filteredArray);
+        // console.log(found);
     }
 
     if ( category !== '0' )
     {
-        console.log(category);
+        console.log( `Category search value: ${category}`);
+        const promise =
+            await fetch(`https://www.thecocktaildb.com/api/json/v1/1/filter.php?c=${category.replaceAll( ' ', '_' )}`)
+        const drinksOfCategory = await promise.json();
+        console.log(drinksOfCategory);
+
+        filteredArray = filteredArray.filter( (drink) =>
+        {
+            return drinksOfCategory.drinks.some(
+                (drinksOfCategory) => drink.idDrink === drinksOfCategory.idDrink
+            )
+        })
+        console.log(filteredArray);
+    }
+
+    if ( glass !== '0' )
+    {
+        console.log( `Glass search value: ${glass}`);
+        const promise =
+            await fetch(`https://www.thecocktaildb.com/api/json/v1/1/filter.php?g=${glass.replaceAll( ' ', '_' )}`)
+
+        const drinksOfGlass = await promise.json();
+        console.log(drinksOfGlass);
+
+        filteredArray = filteredArray.filter( (drink) =>
+            drinksOfGlass.drinks.some(
+                (drinksOfGlass) => drink.idDrink === drinksOfGlass.idDrink
+            )
+        )
+        console.log(filteredArray);
+    }
+
+    if ( ingredient !== '0' )
+    {
+        console.log( `Ingredient search value: ${ingredient}`);
+        const promise =
+            await fetch(`https://www.thecocktaildb.com/api/json/v1/1/filter.php?i=${ingredient.replaceAll( ' ', '_' )}`)
+        const drinksOfIngredient = await promise.json();
+        console.log(drinksOfIngredient);
+
+        filteredArray = filteredArray.filter( (drink) =>
+            drinksOfIngredient.drinks.some(
+                (drinksOfIngredient) => drink.idDrink === drinksOfIngredient.idDrink
+            )
+        )
+        console.log(filteredArray);
 
     }
 
+    generateDrinksHtml(filteredArray);
     // console.log(filteredArray)
-    console.log( `Search value: ${searchValue}` );
 
 };
 
@@ -188,6 +307,9 @@ const init = async () =>
 }
 
 buttonSearch.addEventListener('click', filter);
+// luckyButton.addEventListener( 'click', openModal(0, true) )
+// luckyButton.addEventListener( onclick, openModal( 0, false) )
+
 init();
 
 
