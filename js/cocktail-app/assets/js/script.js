@@ -1,20 +1,15 @@
 console.clear();
-// alert('works');
 
 const cocktailNameFilterElement = document.getElementById('cocktail-name-search');
 const categorySelectElement = document.getElementById('category-select');
 const glassTypeSelectElement = document.getElementById('glass-type-select');
 const ingredientSelectElement = document.getElementById('ingredient-select');
-
 const buttonSearch = document.getElementById('search');
-const luckyButton = document.getElementById('im-lucky');
+const cocktailApp = document.getElementById('cocktails-app');
 
-const cocktailAppHtml = document.getElementById('cocktails-app');
-
-// const categoriesArray = [];
 const drinksArray = [];
-
 const selectValues = {};
+const drinkModal = new bootstrap.Modal(document.getElementById('drinkModal'));
 
 const fillSelectElements = async () =>
 {
@@ -44,56 +39,38 @@ const fillSelectElements = async () =>
         return ing.strIngredient1
     });
 
-    fillCategorySelect( allCats.drinks, categorySelectElement, 'strCategory' );
-    fillCategorySelect( allGlasses.drinks, glassTypeSelectElement, 'strGlass' );
-    fillCategorySelect( allIngredients.drinks, ingredientSelectElement, 'strIngredient1' );
-
+    fillCategorySelect(
+        allCats.drinks,
+        categorySelectElement,
+        'strCategory',
+        getLocalStorageItem('cocktail-search-category')
+    );
+    fillCategorySelect(
+        allGlasses.drinks,
+        glassTypeSelectElement,
+        'strGlass',
+        getLocalStorageItem('cocktail-search-glass')
+    );
+    fillCategorySelect(
+        allIngredients.drinks,
+        ingredientSelectElement,
+        'strIngredient1',
+        getLocalStorageItem('cocktail-search-ingredient')
+    );
     console.log(selectValues);
-
-    // console.log(allCats);
-    // console.log(allGlasses);
-    // console.log(allIngredients);
-
-    // console.log(allPromises);
-    // console.log(allValues);
-
-    // console.time('await');
-    // await fetch('https://www.thecocktaildb.com/api/json/v1/1/list.php?c=list')
-    //     .then( (result) => result.json() )
-    //     // .then( (result) => console.log(result) )
-    //     .then( (result) =>
-    //     {
-    //         fillCategorySelect( result.drinks, categorySelectElement, 'strCategory' );
-    //         categoriesArray.push(
-    //             ...result.drinks.map( (val) => val.strCategory )
-    //         );
-    //     })
-    //     .catch( (error) => console.log(error) )
-    //     .finally( () => console.log('Request finished 1') )
-    //
-    // await fetch('https://www.thecocktaildb.com/api/json/v1/1/list.php?g=list')
-    //     .then( (result) => result.json() )
-    //     // .then( (result) => console.log(result) )
-    //     .then( (result) => fillCategorySelect( result.drinks, glassTypeSelectElement, 'strGlass' ) )
-    //     .catch( (error) => console.log(error) )
-    //     .finally( () => console.log('Request finished 2') )
-    //
-    // await fetch('https://www.thecocktaildb.com/api/json/v1/1/list.php?i=list')
-    //     .then( (result) => result.json() )
-    //     // .then( (result) => console.log(result) )
-    //     .then( (result) => fillCategorySelect( result.drinks, ingredientSelectElement, 'strIngredient1' ) )
-    //     .catch( (error) => console.log(error) )
-    //     .finally( () => console.log('Request finished 3') )
-    // console.timeEnd('await');
 }
-
-const fillCategorySelect = ( properties, selectElement, strFieldName ) =>
+const fillCategorySelect = ( properties, selectElement, strFieldName, searchField = '' ) =>
 {
+    console.log( 'ss: ' + searchField);
+    // console.log( 'local cat: ' + getLocalStorageItem('cocktail-search-category'));
+
     let dynamicHtml = ``;
-    for ( const property of properties)
+    for ( const property of properties )
     {
         // console.log(category.strCategory);
-        dynamicHtml += `<option value="${property[strFieldName]}">${property[strFieldName]}</option>`;
+        let field = property[strFieldName];
+        dynamicHtml +=
+            `<option value="${field}" ${field === searchField ? 'selected' : ''}>${field}</option>`;
     }
     selectElement.innerHTML += dynamicHtml;
     // console.log(categoriesArray);
@@ -143,20 +120,28 @@ const getAllDrinks = async (  ) =>
 const generateDrinksHtml = (drinks) =>
 {
     let dynamicHtml = '';
-    for ( const drink of drinks )
+    
+    if ( drinks !== null )
     {
-        dynamicHtml += `<div class="col-4 my-3" id="${drink.idDrink}" onclick="openModal( event, ${drink.idDrink} )">
-            <div class="card">
+        for ( const drink of drinks )
+        {
+            dynamicHtml += `<div class="col-4 my-3" id="${drink.idDrink}" onclick="openModal( event, ${drink.idDrink} )">
+            <div class="card shadow">
                 <img src="${drink.strDrinkThumb}" class="card-img-top" alt="${drink.strDrink}">
                 <div class="card-body placeholder-glow">
                     <h5 class="card-title">${drink.strDrink}</h5>
                 </div>
             </div>
         </div>`;
+        }
     }
-    cocktailAppHtml.innerHTML = dynamicHtml;
+    else
+    {
+        dynamicHtml = `<p class="text-center mt-5 fs-5">Sorry, no cocktails found :(</p>`;
+    }
+    
+    cocktailApp.innerHTML = dynamicHtml;
 }
-
 const openModal = async ( event, drinkId) =>
 {
     event.preventDefault();
@@ -181,30 +166,170 @@ const openModal = async ( event, drinkId) =>
     const singleDrink = data.drinks[0];
     console.log( singleDrink );
 
+    const ingredientsWithMeasures = [
+        ['Peach Vodka', '2 oz'],
+        ['Cola', '5 oz'],
+    ];
+
+    const maped = ingredientsWithMeasures.map( (value, index) =>
+    {
+        return value[index] + '---';
+    });
+
     const ingredients = [];
     const measures = [];
-    for (const prop in singleDrink) {
+
+    const ingsMes = [];
+    const another = [];
+
+    for (const prop in singleDrink)
+    {
+        if ( prop.startsWith("strIngredient") && singleDrink[prop] !== null
+            || prop.startsWith("strMeasure") && singleDrink[prop] !== null )
+        {
+            another.push([singleDrink[prop]]);
+        }
+
         if (prop.startsWith("strIngredient") && singleDrink[prop] !== null) {
             ingredients.push(singleDrink[prop]);
+            ingsMes.push(singleDrink[prop]);
         } else if (prop.startsWith("strMeasure") && singleDrink[prop] !== null) {
             measures.push(singleDrink[prop]);
+            ingsMes.push(singleDrink[prop]);
         }
     }
+
+    const ingredientsWithMeasures2 = [];
+
+    for (let i = 1; i <= 15; i++) {
+        // const ingredient = singleDrink[`strIngredient${i}`];
+        const ingredient = ingredients[i];
+        // const measure = singleDrink[`strMeasure${i}`];
+        const measure = measures[i];
+
+        if (ingredient && measure) {
+            ingredientsWithMeasures2.push([ingredient, measure.trim()]);
+        }
+    }
+
+    console.log(ingredientsWithMeasures2);
+
+    let dynamicHtml = '';
+    for (let i = 0; i < ingredientsWithMeasures2.length; i++)
+    {
+        const [ingredient, measure] = ingredientsWithMeasures2[i];
+        dynamicHtml += `<div class="col-6">
+            <p class="fst-italic fw-bold m-0">${ingredient}</p>
+        </div>
+        <div class="col-6">
+            <p class="fst-italic m-0">${measure}</p>
+        </div>`;
+        // console.log(`Ingredient: ${ingredient}, Measure: ${measure}`);
+    }
+
+    document.getElementById('modal-drink-ingredients').innerHTML = dynamicHtml;
+
+    console.log(dynamicHtml);
+    // console.log(maped);
+    // console.log(ingredientsWithMeasures);
+
+
+    // console.log(another);
+    // console.log(ingsMes);
     console.log(ingredients);
     console.log(measures);
 
+    for ( let i = 0; i < 15; i++ )
+    {
+        const ingredient = ingredients[i];
+        const measure = measures[i];
 
-    const myModal = new bootstrap.Modal(document.getElementById('staticBackdrop'));
+        if ( ingredient && measure )
+        {
+            // console.log( ingredient );
+            // console.log( measure );
+        }
+    }
+
+    // const linkElement = document.createElement('a');
+    // const pElement = document.createElement('p');
+    // pElement.innerHTML = `${singleDrink.strCategory} / <a href="#">Show all</a>`;
+    // linkElement.href = '#';
+
+    /*
+    * todo: create new function
+    *  add eventListener for id modal-drink-category > a, get it's data-showcategory
+    * on click: close modal and get show drink by selected category
+    * */
+
+    // const drinkModal = new bootstrap.Modal(document.getElementById('drinkModal'));
     document.getElementById('modal-drink-img').src = singleDrink.strDrinkThumb;
     document.getElementById('modal-drink-img').alt = singleDrink.strDrink;
-    document.getElementById('modal-drink-category').innerHTML = singleDrink.strCategory;
-    document.getElementById('modal-drink-alcoholic').innerHTML = singleDrink.strAlcoholic;
-    document.getElementById('modal-drink-glass').innerHTML = singleDrink.strGlass;
+    // document.getElementById('modal-drink-category').innerHTML = singleDrink.strCategory;
+    // document.getElementById('modal-drink-category').innerHTML = linkElement;
+    // document.getElementById('modal-drink-category').appendChild(pElement);
+    document.getElementById('modal-drink-category').innerHTML =
+        `${singleDrink.strCategory} / <a href="#" data-show-category="${singleDrink.strCategory}">Show all</a>`;
+
+    // document.getElementById('modal-drink-alcoholic').innerHTML = singleDrink.strAlcoholic;
+    document.getElementById('modal-drink-alcoholic').innerHTML =
+        `${singleDrink.strAlcoholic} / <a href="#" data-show-alcoholic="${singleDrink.strAlcoholic}">Show all</a>`;
+    // document.getElementById('modal-drink-glass').innerHTML = singleDrink.strGlass;
+    document.getElementById('modal-drink-glass').innerHTML =
+        `${singleDrink.strGlass} / <a href="#" data-show-glass="${singleDrink.strGlass}">Show all</a>`;
     document.getElementById('modal-drink-title').innerHTML = singleDrink.strDrink;
     document.getElementById('modal-drink-instructions').innerHTML = singleDrink.strInstructions;
 
-    myModal.show();
+    drinkModal.show();
+
+    showDrinksByParameter();
+
     // alert(drinkId);
+}
+
+// Set an item in localStorage
+// const setLocalStorageItem = (key, value) => {
+//     try {
+//         localStorage.setItem(key, JSON.stringify(value));
+//         console.log(`Item with key '${key}' successfully set in localStorage.`);
+//     } catch (error) {
+//         console.error(`Error setting item with key '${key}' in localStorage:`, error);
+//     }
+// };
+
+const setLocalStorageItem = (key, value) =>
+{
+    try {
+        localStorage.setItem(key, JSON.stringify(value));
+        console.log(`Item with key '${key}' successfully set in localStorage.`);
+    } catch (error) {
+        console.error(`Error setting item with key '${key}' in localStorage:`, error);
+    }
+}
+
+const getLocalStorageItem = (key) => {
+    try {
+        const storedValue = localStorage.getItem(key);
+        if (storedValue !== null) {
+            // Parse the JSON string to convert it back to its original form
+            return JSON.parse(storedValue);
+        } else {
+            console.warn(`No item found in localStorage with key '${key}'.`);
+            return null;
+        }
+    } catch (error) {
+        console.error(`Error getting item from localStorage with key '${key}':`, error);
+        return null;
+    }
+}
+
+const removeLocalStorageItem = (key) => {
+    try {
+        localStorage.removeItem(key);
+        console.log(`Item with key '${key}' successfully removed from localStorage.`);
+    } catch (error) {
+        console.error(`Error removing item with key '${key}' from localStorage:`, error);
+    }
 }
 
 const filter = async (event) =>
@@ -247,6 +372,13 @@ const filter = async (event) =>
             )
         })
         console.log(filteredArray);
+
+        setLocalStorageItem('cocktail-search-category', category);
+
+    }
+    else if ( category === '0' )
+    {
+        removeLocalStorageItem( 'cocktail-search-category' );
     }
 
     if ( glass !== '0' )
@@ -264,7 +396,15 @@ const filter = async (event) =>
             )
         )
         console.log(filteredArray);
+
+        setLocalStorageItem('cocktail-search-glass', glass);
+
     }
+    else if ( glass === '0' )
+    {
+        removeLocalStorageItem('cocktail-search-glass');
+    }
+
 
     if ( ingredient !== '0' )
     {
@@ -281,6 +421,11 @@ const filter = async (event) =>
         )
         console.log(filteredArray);
 
+        setLocalStorageItem('cocktail-search-ingredient', ingredient);
+    }
+    else if ( ingredient === '0' )
+    {
+        removeLocalStorageItem('cocktail-search-ingredient');
     }
 
     generateDrinksHtml(filteredArray);
@@ -298,11 +443,26 @@ const init = async () =>
     console.timeEnd('getAllDrinks');
     console.log(drinksArray);
 
-    // document.getElementById('cocktails-app').classList.add('added-shit');
+    const category = categorySelectElement.value;
+    const glass = glassTypeSelectElement.value;
+    const ingredient = ingredientSelectElement.value;
+    if ( category !== '0' || glass !== '0' || ingredient !== '0' )
+    {
+        // alert(category);
+        buttonSearch.click();
+    }
+    else
+    {
+        // alert('it is clear');
+        generateDrinksHtml(drinksArray);
+    }
 
-    generateDrinksHtml(drinksArray);
+    // generateDrinksHtml(drinksArray);
 
+    await generateLetterButtons();
     // document.querySelector('.card-title.placeholder').classList.remove('placeholder');
+
+    // await showDrinksByParameter();
 
 }
 
@@ -311,6 +471,161 @@ buttonSearch.addEventListener('click', filter);
 // luckyButton.addEventListener( onclick, openModal( 0, false) )
 
 init();
+
+
+const filterByLetter = async ( letter ) =>
+{
+    // console.log( letter );
+    const promise =
+        await fetch(`https://www.thecocktaildb.com/api/json/v1/1/search.php?f=${letter}`)
+    const drinksByLetter = await promise.json();
+    console.log(drinksByLetter.drinks);
+    generateDrinksHtml(drinksByLetter.drinks);
+}
+const generateLetterButtons = async () =>
+{
+    const drinksCloud = document.getElementById('drinks-cloud');
+
+    let dynamicHtml = '';
+    for ( let i = 65 ; i <= 90; i++ )
+    {
+        dynamicHtml +=
+            `<a class="btn btn-secondary btn-sm me-1 mt-1" href="#" role="button" data-letter="${String.fromCharCode(i)}">${String.fromCharCode(i)}</a>`
+    }
+    drinksCloud.innerHTML = dynamicHtml;
+
+    drinksCloud.addEventListener('click', function (event)
+    {
+        // link clicked (a element)
+        const target = event.target;
+        const activeButtonClass = 'btn-primary';
+        const buttonClass = 'btn-secondary';
+
+        const allLinks = drinksCloud.getElementsByTagName('a');
+        for ( const link of allLinks )
+        {
+            if (link !== target)
+            {
+                link.classList.remove(activeButtonClass);
+                link.classList.add(buttonClass);
+            }
+        }
+
+        if (target.tagName === 'A')
+        {
+            event.preventDefault();
+            target.classList.add(activeButtonClass);
+            target.classList.remove(buttonClass);
+            filterByLetter(target.getAttribute('data-letter'));
+        }
+    });
+
+    document.getElementById('clearLetterFilter').addEventListener( 'click', ( event ) =>
+    {
+        event.preventDefault();
+        const activeButtonClass = 'btn-primary';
+        const buttonClass = 'btn-secondary';
+        const allLinks = drinksCloud.getElementsByTagName('a');
+        for ( const link of allLinks )
+        {
+            link.classList.remove(activeButtonClass);
+            link.classList.add(buttonClass);
+        }
+        generateDrinksHtml(drinksArray);
+    })
+
+}
+
+const requestForGetDrinksBy = async ( url ) =>
+{
+    drinkModal.hide();
+    const promise = await fetch(url)
+    const drinksOfCategory = await promise.json();
+    console.log(drinksOfCategory.drinks);
+    generateDrinksHtml(drinksOfCategory.drinks);
+    console.log(`getDrinksBy DONE`);
+}
+
+const getDrinksBy = async ( filter, param ) =>
+{
+    if ( filter === 'alcoholic' )
+    {
+        await requestForGetDrinksBy( `https://www.thecocktaildb.com/api/json/v1/1/filter.php?a=${param}` );
+    }
+    else if ( filter === 'category' )
+    {
+        await requestForGetDrinksBy( `https://www.thecocktaildb.com/api/json/v1/1/filter.php?c=${param}` );
+    }
+}
+
+const showDrinksByParameter = async () =>
+{
+    const showCategory = document.querySelector('#modal-drink-category a');
+    const showAlco = document.querySelector('#modal-drink-alcoholic a');
+    // const showCategory = document.querySelector('#data-show-alcoholic a');
+    const showAllLink = document.querySelector('#drinkModal a');
+
+    showCategory.addEventListener( 'click', ( event ) =>
+    {
+        const categoryToShow = event.target.dataset.showCategory;
+        getDrinksBy( 'category', categoryToShow.replaceAll( ' ', '_' ));
+
+        alert(categoryToShow.replaceAll( ' ', '_' ));
+    });
+
+    showAlco.addEventListener( 'click', ( event ) =>
+    {
+        const categoryToShow = event.target.dataset.showAlcoholic;
+        getDrinksBy( 'alcoholic', categoryToShow.replaceAll( ' ', '_' ));
+
+        alert(categoryToShow.replaceAll( ' ', '_' ));
+    });
+
+
+    // showCategory.addEventListener('click', function(event)
+    showAllLink.addEventListener('click', function(event)
+    {
+        event.preventDefault();
+
+        console.log(showAllLink);
+
+        const attributes = showAllLink.attributes;
+
+        for (let i = 0; i < attributes.length; i++)
+        {
+            const attributeName = attributes[i].name;
+
+            if (attributeName.startsWith('data-'))
+            {
+                console.log('Data attribute name:', attributeName);
+
+                if ( attributeName === 'data-show-category' )
+                {
+                    const categoryToShow = event.target.dataset.showCategory;
+                    alert(categoryToShow);
+                    getDrinksBy(categoryToShow.replaceAll( ' ', '_' ));
+                }
+                else if ( attributeName === 'data-show-alcoholic' )
+                {
+                    const categoryToShow = event.target.dataset.showAlcoholic;
+                    alert(categoryToShow);
+                    getDrinksBy(categoryToShow.replaceAll( ' ', '_' ));
+                }
+
+            }
+        }
+
+
+        // const categoryToShow = showCategory.dataset.showCategory;
+        // console.log(categoryToShow);
+        // getDrinksBy(categoryToShow.replaceAll( ' ', '_' ));
+
+    });
+
+
+
+
+}
 
 
 
