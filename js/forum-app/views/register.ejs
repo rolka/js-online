@@ -1,18 +1,55 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
+<%- include('./components/page/head') %>
 <body>
+<%- include('./components/page/nav') %>
 
-<%- include('./components/nav') %>
-<p>Register</p>
+<div class="container mt-5">
+    <div class="row mb-5">
+        <div class="col-12">
+            <h1 class="text-center">Register</h1>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label for="username" class="col-sm-2 col-form-label">Username</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <label for="dateOfBirth" class="col-sm-2 col-form-label">Date Of Birth</label>
+        <div class="col-sm-10">
+            <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth" placeholder="Date Of Birth" required>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <label for="password" class="col-sm-2 col-form-label">Password</label>
+        <div class="col-sm-10">
+            <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <label for="email" class="col-sm-2 col-form-label">Email</label>
+        <div class="col-sm-10">
+            <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
+        </div>
+    </div>
+
+    <div class="row">
+        <label for="profilePhoto" class="col-sm-2 col-form-label">Profile photo</label>
+        <div class="col-sm-10">
+            <input type="file" accept=".jpeg, .png, .gif, .bmp" class="form-control" id="profilePhoto" name="img" placeholder="Profile photo" required>
+        </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="row mt-3">
+        <div class="col-12">
+            <button type="submit" class="btn btn-outline-dark" id="register">Register</button>
+        </div>
+    </div>
+</div>
 
 
-
-</body>
-</html>
+<%- include('./components/page/foot') %>

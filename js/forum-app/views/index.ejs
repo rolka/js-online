@@ -1,31 +1,42 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="../public/assets/css/style.css">
-    <title><%= title %></title>
-</head>
-<body>
+<%- include('./components/page/head') %>
+<body class="">
+<%- include('./components/page/nav') %>
 
-<%- include('./components/nav') %>
+<!-- page content here -->
+<div class="container mt-5">
+    <div class="row mb-5">
+        <div class="col-12">
+            <h1 class="text-center">Login</h1>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <label for="username" class="col-sm-2 col-form-label">Username</label>
+        <div class="col-sm-10">
+            <input type="text" class="form-control" id="username" name="username" placeholder="Username" required>
+        </div>
+    </div>
 
-<% if ( username ) {%>
-<p>User is: <%=username%></p>
-<%} else { %>
-<p>User does not exist</p>
-<% } %>
+    <div class="row mb-3">
+        <label for="email" class="col-sm-2 col-form-label">Email</label>
+        <div class="col-sm-10">
+            <input type="email" class="form-control" id="email" name="email" placeholder="Email" required>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <label for="password" class="col-sm-2 col-form-label">Password</label>
+        <div class="col-sm-10">
+            <input type="password" class="form-control" id="password" name="password" placeholder="Password" required>
+        </div>
+    </div>
+
+    <!-- Submit Button -->
+    <div class="row mt-3">
+        <div class="col-12">
+            <button type="submit" class="btn btn-outline-dark">Login</button>
+        </div>
+    </div>
+</div>
 
 
-<ul>
-    <% for ( const product of list ) { %>
-        <li><%=product%></li>
-    <% } %>
-</ul>
-
-
-<script src="public/index.js"></script>
-</body>
-</html>
+<%- include('./components/page/foot') %>

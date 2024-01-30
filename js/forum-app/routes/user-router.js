@@ -1,18 +1,46 @@
 const express = require('express');
 const router = express.Router();
 const UserModel = require('../models/user');
-router.post( '/register',  async ( req, res) =>
-{
-    const {username, email} = req.body;
+const upload = require('../config/multer').upload;
+const security = require('../utils/security');
 
-    if ( ! username || ! email )
+router.post( '/register', upload.single('img'), async ( req, res) =>
+{
+    const {username, password, birthDate, email} = req.body;
+    // const fileName = req.file.originalname;
+    // const fileName = req.file.name;
+    const fileName = require('../config/multer').lastFileName;
+    console.log(req.body);
+    console.log(fileName);
+    // res.json({message: req.body});
+
+    // todo: uncomment and replace another if statement
+    // const requiredFields = ['username', 'email', 'password', 'birthDate'];
+    // const missingDetails = requiredFields.filter(field => !req.body[field]);
+    // if (missingDetails.length > 0) {
+    //     return res.status(400)
+    //         .json({ message: `Missing details: ${missingDetails.join(', ')}` });
+    // }
+
+    // return;
+    //
+    // const {username, email} = req.body;
+    //
+    if ( ! username || ! email || ! password || ! birthDate )
     {
         return res.status(400).json({ message: 'Some details are missing' })
     }
 
+    const salt = security.generateSalt();
+    const hashedPass = security.hashPassword( password, salt );
+
     const newUser = new UserModel({
         username,
-        email
+        email,
+        password: hashedPass,
+        salt,
+        DOB: birthDate,
+        profilePic: `http://localhost:3003/public/images/${fileName}`
     })
     await newUser.save();
     res.json({ message: newUser });

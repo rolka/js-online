@@ -8,7 +8,6 @@ const config = () =>
         .replace('__DB_HOST', process.env.DB_HOST )
         .replace('__DB_NAME', process.env.DB_NAME );
     // console.log(generatedConnection);
-    // mongoose.connect('mongodb+srv://roz_db_user:oK88fe8NFJion2h4@cluster0.nbgdbhc.mongodb.net/');
     mongoose.connect(generatedConnection);
     const db = mongoose.connection;
     db.on( 'error', () =>
