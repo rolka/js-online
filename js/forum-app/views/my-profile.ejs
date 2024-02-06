@@ -1,0 +1,58 @@
+<%- include('./components/page/head') %>
+<body class="">
+
+<% if ( loggedIn ) { %>
+    <%- include('./components/page/loggedInNav') %>
+<%} else { %>
+    <%- include('./components/page/nav') %>
+<% } %>
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <img src="<%=userData.profilePic%>" class="card-img-top" alt="Profile Image">
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Your Name</h5>
+                    <p class="card-text">Username: <%=userData.username%></p>
+                    <p class="card-text">Email: <%=userData.email%></p>
+                    <p class="card-text">Date of Birth: <%=userData.DOB%></p>
+                </div>
+            </div>
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h5 class="card-title">Profile Statistics</h5>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <p>Posted Threads: <%=userData.postsCount%></p>
+                        </li>
+                        <li class="list-group-item">
+                            <p>Comments: <%=userData.commentsCount%></p>
+                        </li>
+                        <!-- Add more statistics as needed -->
+                    </ul>
+                </div>
+            </div>
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h5 class="card-title">Likes and Dislikes</h5>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            Threads Liked: <i class="fas fa-thumbs-up ml-2"></i> <%=userData.likes%>
+                        </li>
+                        <li class="list-group-item">
+                            Threads Disliked: <i class="fas fa-thumbs-down ml-2"></i> <%=userData.dislikes%>
+                        </li>
+                        <!-- Add more likes and dislikes as needed -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('./components/page/foot') %>

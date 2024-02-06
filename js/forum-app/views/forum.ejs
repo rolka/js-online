@@ -1,0 +1,52 @@
+<%- include('./components/page/head') %>
+
+<body>
+
+<% if ( loggedIn ) { %>
+    <%- include('./components/page/loggedInNav') %>
+<%} else { %>
+    <%- include('./components/page/nav') %>
+<% } %>
+
+<div class="container mt-4">
+    <h2>Forum</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">Topics</th>
+            <th scope="col">Replies</th>
+            <th scope="col">Views</th>
+            <th scope="col">Last Posted</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- Example Row 1 -->
+        <tr>
+            <td>
+                <div class="d-flex align-items-center gap-3">
+                    <img width="100" class="img-fluid rounded-circle avatar mr-2" src="../public/assets/images/user-1.webp" alt="Avatar">
+                    <div>
+                        <a href="#">Topic 1</a>
+                        <p class="text-muted">Author: <span class="username">JohnDoe</span></p>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <span class="badge bg-secondary">10 Replies</span>
+            </td>
+            <td>
+                <span class="badge bg-secondary">100 Views</span>
+            </td>
+            <td>2022-01-26 12:30 PM <span class="d-block username">by JaneDoe</span></td>
+        </tr>
+        <!-- More rows go here... -->
+        </tbody>
+    </table>
+</div>
+
+
+
+
+
+
+<%- include('./components/page/foot') %>
