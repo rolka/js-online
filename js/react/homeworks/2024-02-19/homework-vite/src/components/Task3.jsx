@@ -21,7 +21,7 @@ export const Task3 = ( {title, color, colorSetting} ) =>
     useEffect(() =>
     {
         // check()
-        console.log('effect loaded. color: ' + colorSetting);
+        // console.log('effect loaded. color: ' + colorSetting);
         if ( colorSetting === 1 )
         {
             color = 'red';
@@ -30,7 +30,7 @@ export const Task3 = ( {title, color, colorSetting} ) =>
         {
             color = 'blue';
         }
-        console.log(`If finished. Color setting: ${colorSetting}. Color: ${color}`);
+        // console.log(`If finished. Color setting: ${colorSetting}. Color: ${color}`);
     }, []);
     return (
         <>
