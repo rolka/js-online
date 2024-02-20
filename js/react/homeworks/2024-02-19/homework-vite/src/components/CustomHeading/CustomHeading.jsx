@@ -7,7 +7,7 @@ export const CustomHeading = ({
 }) => (
     // <div className={classNames({ customHeading: true })}>
     <div className={customHeadingClass}>
-        <h1 style={{ color: color }}>{children}</h1>
+        <h1 style={{ color: color || 'blue' }}>{children}</h1>
     </div>
 )
 const customHeadingClass = classNames({
