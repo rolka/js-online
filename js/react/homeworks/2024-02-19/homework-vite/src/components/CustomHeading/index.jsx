@@ -13,3 +13,4 @@ export const CustomHeading = ({
 const customHeadingClass = classNames({
     customHeading: true,
 });
+

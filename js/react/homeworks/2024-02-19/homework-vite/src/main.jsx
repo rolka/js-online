@@ -9,11 +9,13 @@ import componentData from "./components/componentData.js";
 import { Task3 } from "./components/Task3.jsx";
 import { Task4 } from "./components/Task4.jsx";
 import { Task5 } from "./components/Task5.jsx";
+import { Task6 } from "./components/Task6/Task6.jsx";
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     {/*<App />*/}
     {/*  <Task1 data={data} />*/}
+      <Task6/>
       <Task5/>
       <Task4>
           <>This is some content inside Task4 component.</>

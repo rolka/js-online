@@ -1,4 +1,4 @@
-import { CustomHeading } from "./CustomHeading/CustomHeading.jsx";
+import { CustomHeading } from "./CustomHeading/";
 import { Task4 } from "./Task4.jsx";
 
 export function Task5 ()
