@@ -12,6 +12,7 @@ import { Task5 } from "./components/Task5.jsx";
 import { Task6 } from "./components/Task6/Task6.jsx";
 import { Task7 } from "./components/Task7/Task7.jsx";
 import { Task8 } from "./components/Task8/Task8.jsx";
+import { Task9 } from "./components/Task9/Task9.jsx";
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -20,8 +21,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 
       {/*<Task7 catNameArray={catNameArray} setCatNameArray={setCatNameArray} />*/}
 
+      <Task9/>
       <Task8/>
-
       <Task7/>
       <Task6/>
       <Task5/>
