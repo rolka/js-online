@@ -13,6 +13,8 @@ import { Task6 } from "./components/Task6/Task6.jsx";
 import { Task7 } from "./components/Task7/Task7.jsx";
 import { Task8 } from "./components/Task8/Task8.jsx";
 import { Task9 } from "./components/Task9/Task9.jsx";
+import { UsingEffect } from "./components/UsingEffect/UsingEffect.jsx";
+import { GettingData } from "./components/UsingEffect/GettingData.jsx";
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -20,6 +22,9 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     {/*  <Task1 data={data} />*/}
 
       {/*<Task7 catNameArray={catNameArray} setCatNameArray={setCatNameArray} />*/}
+
+      {/*<GettingData/>*/}
+      {/*<UsingEffect/>*/}
 
       <Task9/>
       <Task8/>
