@@ -10,11 +10,16 @@ import { Task3 } from "./components/Task3.jsx";
 import { Task4 } from "./components/Task4.jsx";
 import { Task5 } from "./components/Task5.jsx";
 import { Task6 } from "./components/Task6/Task6.jsx";
+import { Task7 } from "./components/Task7/Task7.jsx";
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     {/*<App />*/}
     {/*  <Task1 data={data} />*/}
+
+      {/*<Task7 catNameArray={catNameArray} setCatNameArray={setCatNameArray} />*/}
+      <Task7/>
+
       <Task6/>
       <Task5/>
       <Task4>
