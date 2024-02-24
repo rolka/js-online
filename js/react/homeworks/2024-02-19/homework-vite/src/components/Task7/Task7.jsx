@@ -18,13 +18,12 @@ const getTheCats = () => {
     return 'asdasd';
 }
 
-
 // export const Task7 = ({ catNameArray, setCatNameArray }) =>
 export const Task7 = () =>
 {
     useEffect(() =>
     {
-        console.log(getTheCats());
+        // console.log(getTheCats());
     }, []);
 
     const [ catsLocalStorage, setCatsLocalStorage ] = useState(getCatsFromLocalStorage);
