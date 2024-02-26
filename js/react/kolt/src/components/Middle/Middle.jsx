@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { FaPencil } from "react-icons/fa6";
 import { FaTrashAlt } from "react-icons/fa";
+import PropTypes from "prop-types";
 
 const Status = ( {status} ) =>
 {
@@ -9,6 +10,7 @@ const Status = ( {status} ) =>
              style={{ background: status ? "limegreen" : "orangered" }}></div>
     )
 }
+
 const Scooter = ( {scooter} ) => {
     return (
         <div className='bg-white rounded p-4 flex flex-wrap justify-between gap-x-1 gap-y-8'>
@@ -43,18 +45,30 @@ const Scooter = ( {scooter} ) => {
         </div>
     )
 }
+const getScooters = () =>
+{
+    console.log( JSON.parse(localStorage.getItem( 'scooters'  )) ); // null
+    const data = JSON.parse(localStorage.getItem( 'scooters'  )) || []; // if null-set to empty array
+    if ( data.length === 0 )
+    {
+        localStorage.setItem( 'scooters', '[]');
+    }
+    return data;
+}
+
 export const Middle = () =>
 {
-    const [scooters, setScooters] = useState([]);
+    // const [scooters, setScooters] = useState([]);
+    const [scooters, setScooters] = useState(getScooters);
     useEffect(() =>
     {
-        fetch('/scooters.json')
-            .then((resp) => resp.json())
-            .then((data) =>
-            {
-                setScooters(data);
-                console.log(data);
-            })
+        // fetch('/scooters.json')
+        //     .then((resp) => resp.json())
+        //     .then((data) =>
+        //     {
+        //         setScooters(data);
+                // console.log(data);
+            // })
     }, []);
 
     return (
@@ -64,4 +78,8 @@ export const Middle = () =>
             ))}
         </div>
     )
+}
+
+Scooter.propTypes = {
+    scooter: PropTypes.object
 }

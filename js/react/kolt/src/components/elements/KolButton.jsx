@@ -1,7 +1,10 @@
+import PropTypes from "prop-types";
+
 export const KoltButton = ({
     buttonText = 'Button text',
     bgColor,
-    bgColorClass
+    bgColorClass,
+    onClick
 }) => {
     const buttonStyle = {
         // backgroundColor: bgColor || '', // Set a default color if not provided
@@ -21,8 +24,15 @@ export const KoltButton = ({
     ].join(' ');
 
     return (
-        <button className={classes} style={buttonStyle}>
+        <button className={classes}
+                style={buttonStyle}
+                onClick={onClick}>
             {buttonText}
         </button>
     );
 };
+
+KoltButton.propTypes = {
+    buttonText: PropTypes.string,
+    onClick: PropTypes.func
+}
