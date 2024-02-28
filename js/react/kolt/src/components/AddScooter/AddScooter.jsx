@@ -1,12 +1,14 @@
 import { KoltButton } from "../elements/KolButton.jsx";
 import { useState } from "react";
-export const AddScooter = () =>
+import PropTypes from "prop-types";
+import { Middle } from "../Middle/Middle.jsx";
+export const AddScooter = ({ notifyScooterAddition }) =>
 {
     const [ scooter, setScooter ] = useState({
         title: '',
-        ride: '',
+        ride: 0,
         registrationCode: '',
-        hourlyPrice: ''
+        hourlyPrice: 0
     });
 
     const [ errors, setErrors ] = useState([]);
@@ -50,6 +52,10 @@ export const AddScooter = () =>
             setScooter( { ...scooter, registrationCode: e.target.value } );
         }
     }
+
+    /*
+    * todo: check if this works
+    * */
     const handleScooterPriceChange = (e) => {
         if (isNaN(e.target.value) || e.target.value < 0) {
             setErrors([{
@@ -60,9 +66,13 @@ export const AddScooter = () =>
             setMileageError('Price input error');
             console.log('Price error set');
         }
+        else if ( e.target.value > 100 )
+        {
+            alert('Max price is 100Eur/h');
+        }
         else {
             setErrors([]);
-            setMileageError('');
+            // setMileageError('');
             e.target.classList.remove('bg-red-500');
             setScooter( { ...scooter, hourlyPrice: e.target.value } )
             console.log(errors);
@@ -70,7 +80,17 @@ export const AddScooter = () =>
     }
     const createScooter = () =>
     {
-        if (/^[A-Za-z]{3}\d{2}$/.test(scooter.registrationCode)) {
+        if (/^[A-Za-z]{3}\d{2}$/.test(scooter.registrationCode))
+        {
+            /*
+            * note: I need all scooter, which are in middle component
+            * */
+            const newScooter = [
+
+            ];
+
+            notifyScooterAddition( scooter );
+
             console.log('Create scooter');
         } else {
             alert('Errors occurred');
@@ -93,7 +113,7 @@ export const AddScooter = () =>
                            placeholder='Scooter mileage'
                            className='rounded px-2 py-1 outline-2 outline-sky-400 w-full sm:w-1/3'
                            // value={scooter.ride.toString()}
-                           value={scooter.ride}
+                           value={ scooter.ride === 0 ? '' : scooter.ride }
                            onChange={validateMileage}
                     />
                     {/*{mileageError && <span>{mileageError}</span>}*/}
@@ -105,9 +125,10 @@ export const AddScooter = () =>
                     />
                     <input type="number"
                            min={0}
+                           max={110}
                            placeholder='Price Eur/h'
                            className='rounded px-2 py-1 outline-2 outline-sky-400 w-full sm:w-1/3'
-                           value={scooter.hourlyPrice}
+                           value={ scooter.hourlyPrice === 0 ? '' : scooter.hourlyPrice }
                            onChange={handleScooterPriceChange}
                     />
                 </div>
@@ -120,4 +141,8 @@ export const AddScooter = () =>
             </div>
         </>
     )
+}
+
+AddScooter.propTypes = {
+    notifyScooterAddition: PropTypes.func
 }

@@ -7,7 +7,7 @@ const Status = ( {status} ) =>
 {
     return (
         <div className='w-[20px] h-[20px] rounded-full mx-auto'
-             style={{ background: status ? "limegreen" : "orangered" }}></div>
+             style={{ background: status ? 'orangered' : 'limegreen' }}></div>
     )
 }
 
@@ -28,13 +28,18 @@ const Scooter = ( {scooter} ) => {
             </div>
             <div>
                 <h3 className="font-bold">Last used on</h3>
-                <div>{new Date(scooter.lastUseTime).toLocaleDateString("lt")}</div>
+                <div>
+                    { scooter.lastUseTime === 1
+                    ? 'First use'
+                    : new Date(scooter.lastUseTime).toLocaleDateString("lt")
+                    }
+                </div>
             </div>
             <div>
                 <h3 className="font-bold text-center">Status</h3>
                 <div>
                     <Status status={scooter.isBusy}/>{" "}
-                    {scooter.isBusy ? "Available" : "Not Available"}
+                    {scooter.isBusy ? 'Not Available' : 'Available'}
                 </div>
             </div>
             <div className="flex gap-4 text-xl h-full items-center">
@@ -56,10 +61,50 @@ const getScooters = () =>
     return data;
 }
 
-export const Middle = () =>
+export const Middle = ({ newScooter }) =>
 {
     // const [scooters, setScooters] = useState([]);
     const [scooters, setScooters] = useState(getScooters);
+
+    useEffect( () => {
+        console.log('Component loaded or Scooter updated')
+        if ( newScooter )
+        {
+            // console.log('New scooter added');
+            // console.log(newScooter);
+            // console.log(scooters);
+
+            const highestId = scooters.reduce((highest, current) =>
+            {
+                return (highest === undefined || current.id > highest) ? current.id : highest;
+            }, 0);
+            console.log( `Highest  ${ typeof highestId}` );
+            console.log( `Highest  ${highestId + 1}` );
+
+            const newId = +localStorage.getItem('currentId');
+            if ( ! newId )
+            {
+                localStorage.setItem('currentId', '1');
+            }
+            const newScooterAddition = {
+                ...newScooter,
+                id: newId || 1,
+                lastUseTime: 1,
+                isBusy: false
+            };
+            setScooters([  ...scooters, newScooterAddition  ]);
+            // const nextId = newId + 1 === 1 ? 2 : newId + 1;
+            // localStorage.setItem( 'currentId', nextId );
+            localStorage.setItem( 'currentId', highestId + 2 );
+            console.log(newScooterAddition);
+        }
+    }, [newScooter]);
+
+    useEffect(() =>
+    {
+        localStorage.setItem( 'scooters', JSON.stringify(scooters) );
+    }, [scooters]);
+
     useEffect(() =>
     {
         // fetch('/scooters.json')
@@ -83,3 +128,10 @@ export const Middle = () =>
 Scooter.propTypes = {
     scooter: PropTypes.object
 }
+Status.propTypes = {
+    status: PropTypes.bool
+}
+Middle.propTypes = {
+    newScooter: PropTypes.object
+}
+
