@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { FaPencil } from "react-icons/fa6";
 import { FaTrashAlt } from "react-icons/fa";
 import PropTypes from "prop-types";
+import { KoltButton } from "../elements/KolButton.jsx";
 
 const Status = ( {status} ) =>
 {
@@ -44,7 +45,15 @@ const Scooter = ( {scooter} ) => {
             </div>
             <div className="flex gap-4 text-xl h-full items-center">
                 <FaPencil className="text-blue-700 hover:text-blue-900 cursor-pointer"/>
-                <FaTrashAlt className="text-red-700 hover:text-red-900 cursor-pointer"/>
+                <FaTrashAlt className="text-red-700 hover:text-red-900 cursor-pointer"
+                            onClick={(e) => {
+                                alert(scooter.id);
+                                console.log(getScooters());
+                                const allScoots = getScooters();
+                                const newArray = allScoots.filter(item => item.id !== scooter.id);
+                                console.log(newArray);
+                            }}
+                />
             </div>
             <div></div>
         </div>
@@ -65,6 +74,7 @@ export const Middle = ({ newScooter }) =>
 {
     // const [scooters, setScooters] = useState([]);
     const [scooters, setScooters] = useState(getScooters);
+    const [ showAvailableScooters, setShowAvailableScooters ] = useState(null);
 
     useEffect( () => {
         console.log('Component loaded or Scooter updated')
@@ -116,12 +126,93 @@ export const Middle = ({ newScooter }) =>
             // })
     }, []);
 
+    const filteredScooters =
+        useMemo(() => scooters.filter(( val ) =>
+        {
+        console.log('filtering scooters');
+        if ( showAvailableScooters === null )
+        {
+            return true
+        }
+        else if ( showAvailableScooters )
+        {
+            return val.isBusy === false;
+            // return ! val.isBusy;
+        }
+        else
+        {
+            return val.isBusy;
+        }
+    }), [ showAvailableScooters, scooters ]);
+
+    const getColor = () => {
+        return showAvailableScooters
+            ? 'bg-red-600'
+            : showAvailableScooters === false
+                ? 'bg-yellow-500'
+                : 'bg-green-600'
+    }
+    const getButtonText = () => {
+        return showAvailableScooters === true
+            ? 'Show occupied'
+            : ( showAvailableScooters === false ? 'Show all' : 'Show available' )
+    }
+    
     return (
-        <div className="container mx-auto bg-slate-100 min-h-[400px] flex flex-col gap-4 p-4 text-black">
-            {scooters.map((scooter) => (
-                <Scooter key={scooter.id} scooter={scooter}/>
-            ))}
-        </div>
+        <>
+            <div className="container mx-auto bg-slate-100 min-h-[400px] flex flex-col gap-4 p-4 text-black">
+                <div className='flex justify-center items-center gap-4 mt-0'>
+
+                    <select className='bg-white' onChange={(e) =>
+                    {
+                        if ( e.target.value === 'null'  )
+                        {
+                            setShowAvailableScooters(null);
+                        }
+                        else if ( e.target.value === 'true' )
+                        {
+                            setShowAvailableScooters(true);
+                        }
+                        else
+                        {
+                            setShowAvailableScooters(false);
+                        }
+                    }}>
+                        <option value='null'>Show all</option>
+                        <option value='true'>Show available</option>
+                        <option value='false'>Show occupied</option>
+                    </select>
+                    
+                    <KoltButton buttonText={getButtonText()}
+                                bgColorClass={getColor()}
+                                onClick={() => {
+                                    setShowAvailableScooters( (prevValue) => {
+                                        return prevValue ? false : prevValue === false ? null : true;
+                                    } )
+                                }}/>
+
+                    <KoltButton buttonText='Show available'
+                                bgColorClass='bg-green-500'
+                                onClick={() => {
+                                    setShowAvailableScooters(true)
+                                }}/>
+                    <KoltButton buttonText='Show occupied'
+                                bgColorClass='bg-red-500'
+                                onClick={() => {
+                                    setShowAvailableScooters(false)
+                                }}/>
+                    <KoltButton buttonText='Show all'
+                                bgColorClass='bg-yellow-500'
+                                onClick={() => {
+                                    setShowAvailableScooters(null)
+                                }}/>
+                </div>
+                {/*{scooters.map((scooter) => (*/}
+                {filteredScooters.map((scooter) => (
+                    <Scooter key={scooter.id} scooter={scooter}/>
+                ))}
+            </div>
+        </>
     )
 }
 

@@ -86,7 +86,6 @@ export const AddScooter = ({ notifyScooterAddition }) =>
             * note: I need all scooter, which are in middle component
             * */
             const newScooter = [
-
             ];
 
             notifyScooterAddition( scooter );
