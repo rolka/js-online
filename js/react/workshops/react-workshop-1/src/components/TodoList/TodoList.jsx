@@ -12,12 +12,16 @@ export const TodoList = () =>
     const createTask = () => {
 
     }
-    const deleteTodo = ( index ) =>
+    // const deleteTodo = ( index ) =>
+    // {
+    //     const updatedTodos = [...todos];
+    //     updatedTodos.splice( index, 1 );
+    //     setTodos(updatedTodos);
+    // }
+    const deleteTodo = (todoToDelete) =>
     {
-        const updatedTodos = [...todos];
-        updatedTodos.splice( index, 1 );
-        setTodos(updatedTodos);
-    }
+        setTodos(todos.filter((todo) => todo !== todoToDelete));
+    };
 
     return (
         <div className='box w-full'>
@@ -63,10 +67,13 @@ export const TodoList = () =>
             </div>
 
             <ol className="text-left mt-5 bg-white p-5 max-w-md space-y-1 text-black list-decimal list-inside dark:text-gray-500 mx-auto">
-                {todos.map((todo, index) => {
+                {todos.map((todo, index) =>
+                {
                     return (
                         <div key={index}>
-                            <TodoRow todo={todo} index={index} deleteTodo={deleteTodo}/>
+                            <TodoRow todo={todo}
+                                     deleteTodo={() => deleteTodo(todo)}
+                            />
                         </div>
                     )
                 })}
