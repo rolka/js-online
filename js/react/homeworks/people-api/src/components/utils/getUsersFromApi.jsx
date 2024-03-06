@@ -1,4 +1,4 @@
-export const getUsersFromApi = (callback) =>
+export const getUsersFromApi = ( setIsLoadingFun, setPeopleFun, onFinally) =>
 {
     fetch('https://randomuser.me/api/?results=10')
         .then((response) => {
@@ -9,17 +9,16 @@ export const getUsersFromApi = (callback) =>
             return response.json();
         })
         .then(( result ) => {
-            // setPeople(result);
-            console.log(result);
+            // todo: work here
+
+            setPeopleFun(result)
+            // console.log(result);
         })
         .catch((error) => {
             console.error('Error fetching data', error)
         })
         .finally(() => {
-            // setIsLoading(false);
-            // setIsLoading(true);
-            // console.log(people)
+            setIsLoadingFun(false);
+            onFinally();
         })
-
-
 }

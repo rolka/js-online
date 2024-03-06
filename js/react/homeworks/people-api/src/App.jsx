@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import './App.css'
 import { PeopleList } from "./components/PeopleList.jsx";
 import { getUsersFromApi } from "./components/utils/getUsersFromApi.jsx";
@@ -9,18 +9,62 @@ import { getUsersFromApi } from "./components/utils/getUsersFromApi.jsx";
 function App() {
     const [people, setPeople] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [selectedGender, setSelectedGender] = useState('female');
+    const [sortByName, setSortByName] = useState('default');
 
+    const setIsLoadingFun = ( loadingState ) => {
+        setIsLoading(loadingState);
+        // console.log( `Loading was set to ${loadingState}`);
+    }
+    // note: this is just like a callback,
+    // just in a separate function
+    const setPeopleFun = ( people ) => {
+        setPeople(people.results);
+        // console.log(people);
+        // console.log(people.results);
+        console.log('People set');
+    }
+    const onFinallyFun = () => {
+        // console.log('Finally');
+    }
     useEffect(() => {
-
-        getUsersFromApi()
-
+        getUsersFromApi( setIsLoadingFun, setPeopleFun, onFinallyFun );
+        // console.log(people);
     }, []);
 
+    const filteredPeople = useMemo(() => {
+        console.log(people);
+        return people.filter((personObject) => {
+            if ( selectedGender === 'all' )
+            {
+                return true;
+            }
+            else
+            {
+                return personObject.gender === selectedGender
+            }
+        }).sort(( personObj1, personObj2 ) => {
+            const comparison =
+                personObj1.name.first.localeCompare(personObj2.name.first);
+            if ( sortByName === 'asc' )
+            {
+                return comparison;
+            }
+            else if ( sortByName === 'desc' )
+            {
+                return comparison * (-1);
+            }
+            else
+            {
+                return 0;
+            }
+        })
+    }, [ selectedGender, people, sortByName ]);
 
   return (
       <div>
           { isLoading ? (
-              <div className="flex h-full items-center justify-center">
+              <div className="flex h-[100vh] items-center justify-center">
                   <div className="p-4">
                       <div className="text-center">
                           <div role="status">
@@ -40,9 +84,31 @@ function App() {
                   </div>
               </div>
           ) : (
-              <div className="container mx-auto">
+              <div className="container mx-auto mt-5">
+                  <h1 className='text-center text-3xl mb-5'>Saved people</h1>
+
+                  <h1 className='text-center text-3xl mb-5'>People</h1>
+                  <select value={selectedGender}
+                          className='mb-5'
+                          onChange={(e) =>
+                          {
+                              setSelectedGender(e.target.value)
+                          }}>
+                      <option value="all">All</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                  </select>
+                  <select value={sortByName} onChange={(e) =>
+                  {
+                      setSortByName(e.target.value)
+                  }}>
+                      <option value="default">Default</option>
+                      <option value="asc">Name A to Z</option>
+                      <option value="desc">Name Z to A</option>
+                  </select>
                   <div className='grid grid-cols-3 gap-4'>
-                      <PeopleList people={people}/>
+                      {/*<PeopleList people={people}/>*/}
+                      <PeopleList people={filteredPeople}/>
                   </div>
               </div>
           )}
