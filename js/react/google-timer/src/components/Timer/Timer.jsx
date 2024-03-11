@@ -1,103 +1,86 @@
-import { useEffect, useState } from "react";
-import { formatB } from "../utils/formatB.jsx";
-import { formatA } from "../utils/formatA.jsx";
+import { useRef, useState } from "react";
+
 export const Timer = () => {
-    const defaultTime = 20;
-    const [time, setTime] = useState(defaultTime);
-    const [isTimerOn, setTimerOn] = useState(false);
-    const [inputTime, setInputTime] = useState('');
+    const [inputTime, setInputTime] = useState("00:05:00");
+    const [remainingTime, setRemainingTime] = useState(300);
+    const [isRunning, setIsRunning] = useState(false);
+    const timerRef = useRef(null);
 
-    useEffect(() => {
-        // alert(passTimerTime);
-        let intervalId;
+    const calculateTotalSeconds = (timeString) => {
+        const [hours, minutes, seconds] = timeString.split(":").map(Number);
+        return hours * 3600 + minutes * 60 + seconds;
+    };
 
-        if (isTimerOn) {
-            intervalId = setInterval(() => {
-                setTime((prevTime) => {
-                    const newTime = prevTime - 1;
+    const formatTime = (totalSeconds) => {
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    };
 
-                    if (newTime === 0) {
-                        setTimerOn(false); // Stop the timer when it reaches 0
-                        clearInterval(intervalId); // Clear the interval
+    const startTimer = () => {
+        if (!isRunning) {
+            setRemainingTime(calculateTotalSeconds(inputTime));
+            setIsRunning(true);
+            timerRef.current = setInterval(() => {
+                setRemainingTime((prevTime) => {
+                    if (prevTime === 0) {
+                        stopTimer();
+                        return 0;
                     }
-
-                    return newTime;
+                    return prevTime - 1;
                 });
             }, 1000);
-        }
-
-        return () => {
-            clearInterval(intervalId); // Cleanup: clear the interval on component unmount
-        };
-    }, [isTimerOn]);
-
-    const handlePauseToggle = () => {
-        console.log( `input time is: ` + {inputTime} );
-        console.log( {inputTime} );
-        // setTime(inputTime);
-
-        setTimerOn((prev) => !prev); // Toggle the timer state
-    };
-
-    const handleReset = () => {
-        // setTime(defaultTime);
-        setTime(inputTime);
-        setTimerOn(false); // Set isTimerOn to false on reset
-    };
-
-    //
-    const [value, setValue] = useState('000000');
-    const [value2, setValue2] = useState('');
-    const [showFormatB, setShowFormatB] = useState(false);
-    const handleChange = (event) => {
-        // console.log(value);
-        if ( /\d/.test(value) )
-        {
-            setValue(`${value.slice(1)}${event.target.value}`);
+        } else {
+            stopTimer();
+            setInputTime(formatTime(remainingTime));
         }
     };
 
-    const onBlur = () => {
-        setShowFormatB(true);
-        console.log('NO focus');
-    }
-    const onFocus = () => {
-        setShowFormatB(false);
-        console.log('focus');
-    }
-    
+    const stopTimer = () => {
+        clearInterval(timerRef.current);
+        setIsRunning(false);
+    };
+
+    const resetTimer = () => {
+        stopTimer();
+        setInputTime("00:05:00");
+        setRemainingTime(300);
+    };
+
     return (
         <>
-            <div className='relative mb-5'>
+            <div className="flex items-center justify-around flex-col min-h-[200px]">
                 <div>
-                    { showFormatB ? formatB(value) : formatA(value) }
+                    {! isRunning ? (
+                        <input
+                            className="bg-transparent border-none outline-none focus:ring-0 text-[#5f6368] text-6xl font-[400] text-center"
+                            value={inputTime}
+                            type="time"
+                            step={1}
+                            onChange={(e) =>
+                            {
+                                setInputTime(e.target.value);
+                            }}
+                        />
+                    ) : (
+                        <p className="text-[#e8eaed] text-6xl font-[400]">{formatTime(remainingTime)}</p>
+                    )}
                 </div>
-                <input type="text"
-                       value={value2}
-                       maxLength="6"
-                       onBlur={onBlur}
-                       onFocus={onFocus}
-                       onChange={handleChange}
-                       style={{ background: 'rgba(255, 255, 255, 0.5)' }}
-                       className='absolute top-0 right-0 bottom-0 left-0 bg-transparent'
-                />
             </div>
-
-            <p>{time}</p>
-            <div className='text-xs'>
+            <div className="flex items-start w-full pl-5 border-t border-gray-600 py-5 px-3">
                 <button
-                    className='bg-blue-400 text-white px-7 py-2 mr-2 uppercase hover:bg-blue-500 transition ease-in-out duration-300'
-                    onClick={handlePauseToggle}
-                >
-                    {isTimerOn ? "Pause" : "Start"}
+                    className="min-w-[70px] uppercase bg-[#8ab4f8] text-[11px] rounded-[2px] px-[15px] py-[6px] mr-2 hover:bg-[#1B66C9] hover:border-[#1B66C9] text-[#202124] ease-in-out duration-200"
+                    onClick={startTimer}>
+                    {isRunning ? "Pause" : "Start"}
                 </button>
                 <button
-                    className='bg-gray-500 text-white px-3 py-2 uppercase hover:bg-gray-600 transition ease-in-out duration-300'
-                    onClick={handleReset}
-                >
+                    className="min-w-[70px] p-2 bg-[#bdc1c6] text-[11px] rounded-[2px] px-[15px] py-[6px] text-[#202124] hover:bg-[#7c7e7f] duration-200"
+                    onClick={resetTimer}>
                     Reset
                 </button>
             </div>
         </>
     );
+
 };
