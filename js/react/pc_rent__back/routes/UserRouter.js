@@ -100,4 +100,25 @@ router.put('/:id', async (req, res) => {
     }
 });
 
+router.post('/register', async (req, res) =>
+{
+    try
+    {
+        const [ username, password, email, dob, phone, country, county,
+            municipality, zipcode, city, street, houseNumber, apartmentNumber ] = req.body;
+        // const newAddress =
+    }
+    
+    catch ( e )
+    {
+        
+    }
+
+
+    const postData = req.body;
+    res.json({
+        data: postData
+    })
+})
+
 module.exports = router;
