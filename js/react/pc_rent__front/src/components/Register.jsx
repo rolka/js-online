@@ -1,13 +1,22 @@
-import { useDebugValue, useState } from "react";
+// import { useDebugValue, useState } from "react";
 import { validateNumber } from "./utils/FormValidation.jsx";
+import { useEffect, useMemo, useState } from "react";
+import { getCountries } from "/src/components/utils/api/getCountries.jsx";
 
 const isValidNumber = (input) => {
     const phoneNumberRegex = /^[0-9]{3}-[0-9]{3}-[0-9]{4}$/;
     return phoneNumberRegex.test(input);
 };
-
 export const Register = () =>
 {
+    const [countries, setCountries] = useState([]);
+    useEffect(() => {
+        getCountries( (responseCountries) => {
+            console.log(responseCountries);
+            setCountries(responseCountries)
+        } )
+    }, []);
+
     const [userDetails, setUserDetails] = useState({
         username: '',
         password: '',
@@ -136,11 +145,21 @@ export const Register = () =>
                             }}
                     >
                         {/*<option selected>Choose a country</option>*/}
-                        <option value="notSelected">Choose a country</option>
-                        <option value="US">United States</option>
-                        <option value="CA">Canada</option>
-                        <option value="FR">France</option>
-                        <option value="DE">Germany</option>
+                        {
+                            countries.map((country) => {
+                                return (
+                                    <option key={'country-' + country.id}
+                                            value={`${country.id}-${country.country_code}`}>
+                                        {country.coutry_title} {/* Also fixed typo from coutry_title to country_title */}
+                                    </option>
+                                )
+                            })
+                        }
+                        {/*<option value="notSelected">Choose a country</option>*/}
+                        {/*<option value="US">United States</option>*/}
+                        {/*<option value="CA">Canada</option>*/}
+                        {/*<option value="FR">France</option>*/}
+                        {/*<option value="DE">Germany</option>*/}
                     </select>
                     <label htmlFor="floating_countries"
                            className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Choose

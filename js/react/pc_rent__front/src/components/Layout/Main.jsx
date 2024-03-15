@@ -17,7 +17,6 @@ export const Main = () =>
 
                 {/*{ loggedIn ? <Register/> : <Login/> }*/}
 
-
                 <div className='grid grid-cols-3 gap-4'>
                     <SinglePc/>
                     <SinglePc/>
