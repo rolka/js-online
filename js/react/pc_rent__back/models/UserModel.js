@@ -8,7 +8,9 @@ module.exports = class UserModel
     dateOfBirth; // dob
     phone;
     addressId; // address_id
-    constructor ({ user_name, password, email, dateOfBirth, phone, addressId }, id = null )
+    salt;
+    #tableName;
+    constructor ({ user_name, password, email, dateOfBirth, phone, addressId, salt, tableName }, id = null )
     {
         this.#id = id;
         this.user_name = user_name; // username in db
@@ -17,12 +19,18 @@ module.exports = class UserModel
         this.dateOfBirth = dateOfBirth; // dob
         this.phone = phone;
         this.addressId = addressId; // address_id
+        this.salt = salt;
+        // this.#tableName = 'users';
+        this.#tableName = tableName;
     }
     static tableName = 'users';
     get id()
     {
         return this.#id
     }
+    // getTableName() {
+    //     return this.#tableName;
+    // }
     /*
     * note: find all users
     * */
@@ -60,22 +68,29 @@ module.exports = class UserModel
                     dateOfBirth: userObj.dob,
                     phone: userObj.phone,
                     addressId: userObj.address_id,
+                    salt: userObj.salt,
                 }, userObj.id
             )
         })
     }
+    /*
+    *  if a method is static, it can be called like: UserModel.findAllClass2
+    *  const newUser = new UserModel; newUser.findAllClass2() will NOT work
+    * */
     static async findAllClass2() {
         try {
-            const [rows] = await executeStatement(`SELECT * FROM ${UserModel.tableName}`);
+            const [rows] = await executeStatement(`SELECT * FROM ${this.tableName}`);
+            // console.log(rows)
             return rows.map(row => {
-                const { id, username, password, email, dob, phone, address_id } = row;
+                const { id, username, password, email, dob, phone, address_id, salt } = row;
                 const userData = {
                     user_name: username,
                     password,
                     email,
                     dateOfBirth: dob,
                     phone,
-                    addressId: address_id
+                    addressId: address_id,
+                    salt
                 };
                 return new UserModel(userData, id);
             });
@@ -139,31 +154,37 @@ module.exports = class UserModel
     }
     /*
     * note: create new user
+    * this method is not static
+    * so, it is called: const newUser = new UserModel(); newUser.createClass
     * */
-    static async createClass({ username, password, email, dob, phone }) {
-        if (!username || !password || !email || !dob || !phone) {
-            return {
-                success: false,
-                message: "All fields are required."
-            };
-        }
+    async createClass() {
+        // console.log(this)
+        // ${this.#tableName}
         try {
             const sql =
-                `INSERT INTO ${UserModel.tableName} (username, password, email, dob, phone) VALUES (?, ?, ?, ?, ?)`;
-            const [results] = await executeStatement(sql, [username, password, email, dob, phone]);
-            // console.log(results);
+                `INSERT INTO users (username, password, email, dob, phone, address_id, salt) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+            const [results] = await executeStatement(sql, [
+                this.user_name,
+                this.password,
+                this.email,
+                this.dateOfBirth,
+                this.phone,
+                this.addressId,
+                this.salt
+            ]);
+            console.log(results);
+            this.#id = results.insertId;
+            return results;
+            /*
+            * todo: fix return
+            * */
+
             if (results && results.insertId) {
-                const newUser = new UserModel({
-                    user_name: username,
-                    password,
-                    email,
-                    dateOfBirth: dob,
-                    phone
-                }, results.insertId)
+                this.#id = results.insertId;
                 return {
                     success: true,
                     insertId: results.insertId,
-                    user: newUser.getInstance(),
+                    user: this,
                     message: "User created successfully."
                 };
             } else {

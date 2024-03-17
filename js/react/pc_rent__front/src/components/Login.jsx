@@ -1,8 +1,13 @@
+import { Link } from "react-router-dom";
+
 export const Login = () =>
 {
     return (
         <div className='container mx-auto'>
             <h1 className='text-center my-5 text-2xl'>Login</h1>
+            <p className='mb-5'>
+                <Link to='/register' className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Register</Link>
+            </p>
             <form className="border-2 border-gray-100 shadow-gray-300 p-5">
                 <div className="relative z-0 w-full mb-5 group">
                     <input type="text" name="floating_username" id="floating_username"

@@ -10,6 +10,7 @@ module.exports = class Address
     street;
     houseNumber; // house_number
     apartmentNumber; // apartment_number
+    #tableName;
     constructor ( { country, county, municipality, zipcode, city, street, houseNumber, apartmentNumber }, id = null )
     {
         this.#id = id;
@@ -21,8 +22,15 @@ module.exports = class Address
         this.street = street;
         this.houseNumber = houseNumber;
         this.apartmentNumber = apartmentNumber;
+        // this.#tableName = Address.#getTableName();
+        this.#tableName = 'addresses';
     }
-    static tableName = 'addresses';
+    static tableName = 'addresses'; // remove when all replaced
+    // tableName = 'addresses';
+    // static #getTableName() {
+    //     return 'addresses'; // You can fetch the table name from wherever it's stored
+    // }
+
     get id()
     {
         return this.#id
@@ -149,33 +157,34 @@ module.exports = class Address
     /*
      * note: create new user
      * */
-    static async createClass({ country, county, municipality, zipcode, city, street, houseNumber, apartmentNumber }) {
-        if (!country || !county || !municipality || !zipcode || !city || !street || !houseNumber || !apartmentNumber) {
-            return {
-                success: false,
-                message: "All fields are required."
-            };
-        }
+    async createClass() {
         try {
             const sql =
-                `INSERT INTO ${this.tableName} ( country, county, municipality, zipcode, city, street, house_number, apartment_number ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
-            const [results] = await executeStatement(sql, [ country, county, municipality, zipcode, city, street, houseNumber, apartmentNumber ]);
-            // console.log(results);
+                `INSERT INTO ${this.#tableName} 
+                (country, county, municipality, zipcode, city, street, house_number, apartment_number) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+            const [results] = await executeStatement(sql, [
+                this.country,
+                this.county,
+                this.municipality,
+                this.zipcode,
+                this.city,
+                this.street,
+                this.houseNumber,
+                this.apartmentNumber
+            ]);
+            /*
+            * fix return
+            * */
+            this.#id = results.insertId;
+            return results;
+
             if (results && results.insertId) {
-                const newAddress = new Address({
-                    country,
-                    county,
-                    municipality,
-                    zipcode,
-                    city,
-                    street,
-                    house_number: houseNumber,
-                    apartment_number: apartmentNumber
-                }, results.insertId)
+                this.#id = results.insertId;
                 return {
                     success: true,
                     insertId: results.insertId,
-                    user: newAddress.getInstance(),
+                    user: this,
                     message: "Address created successfully."
                 };
             } else {
@@ -192,6 +201,7 @@ module.exports = class Address
             };
         }
     }
+
     static async create({ country, county, municipality, zipcode, city, street, houseNumber, apartmentNumber }) {
         if ( !country || !county || !municipality || !zipcode || !city || !street || !houseNumber || !apartmentNumber ) {
             return {

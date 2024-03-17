@@ -2,6 +2,9 @@
 import { validateNumber } from "./utils/FormValidation.jsx";
 import { useEffect, useMemo, useState } from "react";
 import { getCountries } from "/src/components/utils/api/getCountries.jsx";
+import { Link, useNavigate } from "react-router-dom";
+import { registerUser } from "./utils/registerService.js";
+import { checkSession } from "./utils/checkSession.js";
 
 const isValidNumber = (input) => {
     const phoneNumberRegex = /^[0-9]{3}-[0-9]{3}-[0-9]{4}$/;
@@ -10,15 +13,27 @@ const isValidNumber = (input) => {
 export const Register = () =>
 {
     const [countries, setCountries] = useState([]);
+    
+    const navigate = useNavigate();
     useEffect(() => {
         getCountries( (responseCountries) => {
-            console.log(responseCountries);
+            // console.log(responseCountries);
             setCountries(responseCountries)
-        } )
-    }, []);
+        })
+        checkSession((someData) => {
+            // console.log(someData);
+            if ( someData.isLoggedIn )
+            {
+                navigate('/');
+                // console.log('User IS logged in');
+                // return;
+            }
+            console.log('User not logged in');
+        });
+    }, [navigate]);
 
     const [userDetails, setUserDetails] = useState({
-        username: '',
+        user_name: '',
         password: '',
         email: '',
         dob: '',
@@ -62,21 +77,43 @@ export const Register = () =>
         }
         setUserAddressDetails({...newUserAddressObject});
     }
-
     const isPhoneNumberValid = isValidNumber(userDetails.phone);
+
+    // sendRegistrationDetails
+    const createNewUser = () => {
+        // console.log(userDetails)
+        // console.log(userAddressDetails)
+        const registrationDetails = { ...userDetails, ...userAddressDetails };
+        console.log(registrationDetails);
+        registerUser(registrationDetails);
+    }
+
+    const sortedCountries = useMemo( () => {
+        return countries.sort(( a, b ) => {
+            // console.log(a);
+            // console.log(b);
+            // console.log('---');
+            return a.coutry_title.localeCompare(b.coutry_title)
+        })
+    }, [countries] );
+
 
     return (
         <div className='container mx-auto'>
             <h1 className='text-center my-5 text-2xl'>Register</h1>
+            <p className='mb-5'>
+                <Link to='/login' className="font-medium text-blue-600 dark:text-blue-500 hover:underline">Login</Link>
+            </p>
             <form className="border-2 border-gray-100 shadow-gray-300 p-5">
                 <h2 className='text-xl my-5'>User details</h2>
                 <div className="relative z-0 w-full mb-5 group">
                     <input type="text" name="floating_username" id="floating_username"
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required
-                           value={userDetails.username}
-                           onChange={(e) => {
-                               onFieldChange( e, 'username' )
+                           value={userDetails.user_name}
+                           onChange={(e) =>
+                           {
+                               onFieldChange(e, 'user_name')
                            }}/>
                     <label htmlFor="floating_username"
                            className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Username</label>
@@ -86,8 +123,9 @@ export const Register = () =>
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required autoComplete="on"
                            value={userDetails.password}
-                           onChange={(e) => {
-                               onFieldChange( e, 'password' )
+                           onChange={(e) =>
+                           {
+                               onFieldChange(e, 'password')
                            }}
                     />
                     <label htmlFor="floating_password"
@@ -98,8 +136,9 @@ export const Register = () =>
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required
                            value={userDetails.email}
-                           onChange={(e) => {
-                               onFieldChange( e, 'email' )
+                           onChange={(e) =>
+                           {
+                               onFieldChange(e, 'email')
                            }}
                     />
                     <label htmlFor="floating_email"
@@ -111,8 +150,9 @@ export const Register = () =>
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required
                            value={userDetails.dob}
-                           onChange={(e) => {
-                               onFieldChange( e, 'dob' )
+                           onChange={(e) =>
+                           {
+                               onFieldChange(e, 'dob')
                            }}
                     />
                     <label htmlFor="floating_dob"
@@ -125,8 +165,9 @@ export const Register = () =>
                            }`}
                            placeholder=" " required
                            value={userDetails.phone}
-                           onChange={(e) => {
-                               onFieldChange( e, 'phone' )
+                           onChange={(e) =>
+                           {
+                               onFieldChange(e, 'phone')
                            }}
                     />
                     <label htmlFor="floating_phone"
@@ -140,15 +181,19 @@ export const Register = () =>
                     <select id="floating_countries" name='floating_countries'
                             className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                             value={userAddressDetails.country}
-                            onChange={(e) => {
-                                onUserAddressChange( e, 'country' )
+                            onChange={(e) =>
+                            {
+                                onUserAddressChange(e, 'country')
                             }}
                     >
                         {/*<option selected>Choose a country</option>*/}
                         {
-                            countries.map((country) => {
+                            // countries.map((country) =>
+                            sortedCountries.map((country) =>
+                            {
                                 return (
-                                    <option key={'country-' + country.id}
+                                    // if it breaks, use: key={'country-' + country.id}
+                                    <option key={country.id}
                                             value={`${country.id}-${country.country_code}`}>
                                         {country.coutry_title} {/* Also fixed typo from coutry_title to country_title */}
                                     </option>
@@ -170,8 +215,9 @@ export const Register = () =>
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required
                            value={userAddressDetails.county}
-                           onChange={(e) => {
-                               onUserAddressChange( e, 'county' )
+                           onChange={(e) =>
+                           {
+                               onUserAddressChange(e, 'county')
                            }}
                     />
                     <label htmlFor="floating_county"
@@ -182,8 +228,9 @@ export const Register = () =>
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required
                            value={userAddressDetails.municipality}
-                           onChange={(e) => {
-                               onUserAddressChange( e, 'municipality' )
+                           onChange={(e) =>
+                           {
+                               onUserAddressChange(e, 'municipality')
                            }}
                     />
                     <label htmlFor="floating_municipality"
@@ -194,8 +241,9 @@ export const Register = () =>
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required
                            value={userAddressDetails.zipcode}
-                           onChange={(e) => {
-                               onUserAddressChange( e, 'zipcode' )
+                           onChange={(e) =>
+                           {
+                               onUserAddressChange(e, 'zipcode')
                            }}
                     />
                     <label htmlFor="floating_postcode"
@@ -207,8 +255,9 @@ export const Register = () =>
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required
                            value={userAddressDetails.city}
-                           onChange={(e) => {
-                               onUserAddressChange( e, 'city' )
+                           onChange={(e) =>
+                           {
+                               onUserAddressChange(e, 'city')
                            }}
                     />
                     <label htmlFor="floating_city"
@@ -219,8 +268,9 @@ export const Register = () =>
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required
                            value={userAddressDetails.street}
-                           onChange={(e) => {
-                               onUserAddressChange( e, 'street' )
+                           onChange={(e) =>
+                           {
+                               onUserAddressChange(e, 'street')
                            }}
                     />
                     <label htmlFor="floating_street"
@@ -231,8 +281,9 @@ export const Register = () =>
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required
                            value={userAddressDetails.houseNumber}
-                           onChange={(e) => {
-                               onUserAddressChange( e, 'houseNumber', 'number' )
+                           onChange={(e) =>
+                           {
+                               onUserAddressChange(e, 'houseNumber', 'number')
                            }}
                     />
                     <label htmlFor="floating_housenumber"
@@ -244,8 +295,9 @@ export const Register = () =>
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required
                            value={userAddressDetails.apartmentNumber}
-                           onChange={(e) => {
-                               onUserAddressChange( e, 'apartmentNumber' )
+                           onChange={(e) =>
+                           {
+                               onUserAddressChange(e, 'apartmentNumber')
                            }}
                     />
                     <label htmlFor="floating_flatnumber"
@@ -253,15 +305,17 @@ export const Register = () =>
                         number</label>
                 </div>
                 <div className="flex items-center">
-                    <input id="link-checkbox" type="checkbox" value=""
+                    <input id="link-checkbox" type="checkbox" required value=""
                            className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
                     <label htmlFor="link-checkbox"
                            className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">I agree with the <a
                         href="#" className="text-blue-600 dark:text-blue-500 hover:underline">terms and conditions</a>.</label>
                 </div>
 
-                <button type="submit"
-                        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mt-5">Submit
+                <button type="button"
+                        className="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mt-5"
+                        onClick={createNewUser}
+                >Submit
                 </button>
             </form>
         </div>

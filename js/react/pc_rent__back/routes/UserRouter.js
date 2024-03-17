@@ -1,13 +1,30 @@
 const express = require('express');
 const UserModel = require("../models/UserModel");
 const CountryModel = require("../models/CountryModel");
+const Address = require("../models/AddressModel");
+const security = require("../utils/security");
+// const { Router } = require("express");
 const router = express.Router();
+// import { useLocation } from 'react-router-dom';
+
+router.get('/check-session', (req, res) => {
+    // const isLoggedIn = req.session.isLoggedIn;
+    // return res.json({ isLoggedIn: isLoggedIn })
+
+    // if (req.session.isLoggedIn)
+    //     return res.status(200).json({ isLoggedIn: req.session.isLoggedIn });
+    // return res.status(200).json({ isLoggedIn: false });
+    const isLoggedIn = req.session.isLoggedIn || false;
+    return res.status(200).json({ isLoggedIn });
+
+});
 
 // get all
 router.get('/',  async (req, res) => {
     try
     {
         const results = await UserModel.findAllClass2();
+        console.log(results)
         return res.json(results.map((userModelObj) => {
             console.log(userModelObj);
             return userModelObj.getInstance();
@@ -104,21 +121,46 @@ router.post('/register', async (req, res) =>
 {
     try
     {
-        const [ username, password, email, dob, phone, country, county,
-            municipality, zipcode, city, street, houseNumber, apartmentNumber ] = req.body;
-        // const newAddress =
+        const { user_name, password, email, dob, phone, country, county, municipality, zipcode, city, street, houseNumber, apartmentNumber} = req.body;
+        const newAddress =
+            new Address ({
+            country, county, municipality, zipcode, city, street, houseNumber, apartmentNumber
+        });
+        await newAddress.createClass();
+
+        const salt = security.generateSalt();
+        const hashedPassword = security.hashPassword(password, salt);
+        // console.log(hashedPassword)
+
+        const newUser = new UserModel({
+            user_name, password: hashedPassword, email, dateOfBirth: dob, phone, addressId: newAddress.id, salt
+        })
+        await newUser.createClass();
+        // const userCreated = await newUser.createClass();
+
+        // console.log(userCreated)
+
+        req.session.user = {
+            username: newUser.user_name,
+            email: newUser.email,
+            id: newUser.id,
+            myCrazyData: 'yo'
+        }
+        req.session.isLoggedIn = true;
+
+        res.status(201).json({
+            addressCreated: newAddress.getInstance(),
+            userCreated: newUser.getInstance()
+        })
     }
-    
-    catch ( e )
+    catch ( error )
     {
-        
+        res.status(400).json({
+            error: error
+        })
     }
-
-
-    const postData = req.body;
-    res.json({
-        data: postData
-    })
 })
+
+
 
 module.exports = router;

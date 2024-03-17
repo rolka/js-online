@@ -10,7 +10,7 @@ const setupSessions = require("./utils/sessionSetup");
     // res.json({ message: 'ola' })
 // })
 
-app.use(cors())
+// app.use(cors())
 app.use(express.json());
 setupSessions(app);
 app.use('/api', mainRouter);
