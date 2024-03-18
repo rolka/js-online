@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { getCountries } from "/src/components/utils/api/getCountries.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import { registerUser } from "./utils/registerService.js";
-import { checkSession } from "./utils/checkSession.js";
+import { sessionManager } from "./utils/sessionManager.js";
 
 const isValidNumber = (input) => {
     const phoneNumberRegex = /^[0-9]{3}-[0-9]{3}-[0-9]{4}$/;
@@ -20,7 +20,7 @@ export const Register = () =>
             // console.log(responseCountries);
             setCountries(responseCountries)
         })
-        checkSession((someData) => {
+        sessionManager((someData) => {
             // console.log(someData);
             if ( someData.isLoggedIn )
             {

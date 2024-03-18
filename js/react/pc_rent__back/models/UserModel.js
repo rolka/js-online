@@ -31,6 +31,40 @@ module.exports = class UserModel
     // getTableName() {
     //     return this.#tableName;
     // }
+
+    static async findByUsername( username )
+    {
+        // return { message: username }
+        const results =
+            await executeStatement( 'select * from users where username = ?', [username] );
+        if ( results[0].length === 0 )
+        {
+            return null;
+        }
+        const user = results[0][0];
+        // return user;
+
+        const userData = {
+            user_name: user.username,
+            password: user.password,
+            email: user.email,
+            dateOfBirth: user.dateOfBirth,
+            phone: user.phone,
+            addressId: user.addressId,
+            salt: user.salt
+        }
+        const newUser = new UserModel( userData, user.id )
+        // const newUser = new UserModel({
+        //     user_name: user.user_name,
+        //     password: user.password,
+        //     email: user.email,
+        //     dateOfBirth: user.dateOfBirth,
+        //     phone: user.phone,
+        //     addressId: user.addressId,
+        //     salt: user.salt
+        // }, user.id )
+        return newUser;
+    }
     /*
     * note: find all users
     * */
@@ -99,7 +133,6 @@ module.exports = class UserModel
             throw error; // Re-throw the error for higher-level handling, if needed
         }
     }
-
     /*
     * note: find user by id
     * */
@@ -158,8 +191,27 @@ module.exports = class UserModel
     * so, it is called: const newUser = new UserModel(); newUser.createClass
     * */
     async createClass() {
-        // console.log(this)
+        console.log(this)
         // ${this.#tableName}
+        const sql =
+            `INSERT INTO users (username, password, email, dob, phone, address_id, salt) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+        const [results] = await executeStatement(sql, [
+            this.user_name,
+            this.password,
+            this.email,
+            this.dateOfBirth,
+            // this.dob,
+            this.phone,
+            this.addressId,
+            this.salt
+        ]);
+        // console.log(results);
+        this.#id = results.insertId;
+        return results;
+
+        /*
+        * can be removed
+        * */
         try {
             const sql =
                 `INSERT INTO users (username, password, email, dob, phone, address_id, salt) VALUES (?, ?, ?, ?, ?, ?, ?)`;
@@ -168,17 +220,17 @@ module.exports = class UserModel
                 this.password,
                 this.email,
                 this.dateOfBirth,
+                // this.dob,
                 this.phone,
                 this.addressId,
                 this.salt
             ]);
-            console.log(results);
+            // console.log(results);
             this.#id = results.insertId;
             return results;
             /*
             * todo: fix return
             * */
-
             if (results && results.insertId) {
                 this.#id = results.insertId;
                 return {
