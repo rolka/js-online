@@ -1,6 +1,6 @@
 // import { useDebugValue, useState } from "react";
 import { validateNumber } from "./utils/FormValidation.jsx";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getCountries } from "/src/components/utils/api/getCountries.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import { registerUser } from "./utils/registerService.js";
@@ -31,7 +31,7 @@ export const Register = () =>
             console.log('User not logged in');
         });
     }, [navigate]);
-
+    // user Details: useState
     const [userDetails, setUserDetails] = useState({
         user_name: '',
         password: '',
@@ -39,8 +39,27 @@ export const Register = () =>
         dob: '',
         phone: '',
     });
-
+    // user Details: useRef
+    const userDetailsRef = useRef({
+        user_name: '',
+        password: '',
+        email: '',
+        dob: '',
+        phone: '',
+    })
+    // Address Details: useState
     const [userAddressDetails, setUserAddressDetails] = useState({
+        country: '',
+        county: '',
+        municipality: '',
+        zipcode: '',
+        city: '',
+        street: '',
+        houseNumber: '',
+        apartmentNumber: '',
+    })
+    // Address Details: useRef
+    const userAddressDetailsRef = useRef({
         country: '',
         county: '',
         municipality: '',
@@ -81,13 +100,17 @@ export const Register = () =>
 
     // sendRegistrationDetails
     const createNewUser = () => {
+        // console.log(userDetailsRef.current.user_name)
+        // return;
         // console.log(userDetails)
         // console.log(userAddressDetails)
-        const registrationDetails = { ...userDetails, ...userAddressDetails };
-        console.log(registrationDetails);
+        // const registrationDetails = { ...userDetails, ...userAddressDetails };
+        const registrationDetails = { ...userDetailsRef.current, ...userAddressDetailsRef.current };
+        // console.log(userDetailsRef.current);
+        // console.log(userAddressDetailsRef.current);
+        // console.log(registrationDetails);
         registerUser(registrationDetails);
     }
-
     const sortedCountries = useMemo( () => {
         return countries.sort(( a, b ) => {
             // console.log(a);
@@ -96,7 +119,6 @@ export const Register = () =>
             return a.coutry_title.localeCompare(b.coutry_title)
         })
     }, [countries] );
-
 
     return (
         <div className='container mx-auto'>
@@ -110,10 +132,11 @@ export const Register = () =>
                     <input type="text" name="floating_username" id="floating_username"
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required
-                           value={userDetails.user_name}
+                           // value={userDetails.user_name}
                            onChange={(e) =>
                            {
-                               onFieldChange(e, 'user_name')
+                               // onFieldChange(e, 'user_name')
+                               userDetailsRef.current.user_name = e.target.value
                            }}/>
                     <label htmlFor="floating_username"
                            className="peer-focus:font-medium absolute text-sm text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-600 peer-focus:dark:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Username</label>
@@ -122,10 +145,11 @@ export const Register = () =>
                     <input type="password" name="floating_password" id="floating_password"
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required autoComplete="on"
-                           value={userDetails.password}
+                           // value={userDetails.password}
                            onChange={(e) =>
                            {
-                               onFieldChange(e, 'password')
+                               // onFieldChange(e, 'password')
+                               userDetailsRef.current.password = e.target.value
                            }}
                     />
                     <label htmlFor="floating_password"
@@ -135,10 +159,11 @@ export const Register = () =>
                     <input type="email" name="floating_email" id="floating_email"
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required
-                           value={userDetails.email}
+                           // value={userDetails.email}
                            onChange={(e) =>
                            {
-                               onFieldChange(e, 'email')
+                               // onFieldChange(e, 'email')
+                               userDetailsRef.current.email = e.target.value
                            }}
                     />
                     <label htmlFor="floating_email"
@@ -149,10 +174,11 @@ export const Register = () =>
                     <input type="date" name="floating_dob" id="floating_dob"
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required
-                           value={userDetails.dob}
+                           // value={userDetails.dob}
                            onChange={(e) =>
                            {
-                               onFieldChange(e, 'dob')
+                               // onFieldChange(e, 'dob')
+                               userDetailsRef.current.dob = e.target.value
                            }}
                     />
                     <label htmlFor="floating_dob"
@@ -164,10 +190,11 @@ export const Register = () =>
                                isPhoneNumberValid ? '' : 'border-red-500'
                            }`}
                            placeholder=" " required
-                           value={userDetails.phone}
+                           // value={userDetails.phone}
                            onChange={(e) =>
                            {
-                               onFieldChange(e, 'phone')
+                               // onFieldChange(e, 'phone')
+                               userDetailsRef.current.phone = e.target.value
                            }}
                     />
                     <label htmlFor="floating_phone"
@@ -180,10 +207,11 @@ export const Register = () =>
                 <div className="relative z-0 w-full mb-5 group">
                     <select id="floating_countries" name='floating_countries'
                             className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                            value={userAddressDetails.country}
+                            // value={userAddressDetails.country}
                             onChange={(e) =>
                             {
-                                onUserAddressChange(e, 'country')
+                                // onUserAddressChange(e, 'country')
+                                userAddressDetailsRef.current.country = e.target.value
                             }}
                     >
                         {/*<option selected>Choose a country</option>*/}
@@ -214,10 +242,11 @@ export const Register = () =>
                     <input type="text" name="floating_county" id="floating_county"
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required
-                           value={userAddressDetails.county}
+                           // value={userAddressDetails.county}
                            onChange={(e) =>
                            {
-                               onUserAddressChange(e, 'county')
+                               // onUserAddressChange(e, 'county')
+                               userAddressDetailsRef.current.county = e.target.value
                            }}
                     />
                     <label htmlFor="floating_county"
@@ -227,10 +256,11 @@ export const Register = () =>
                     <input type="text" name="floating_municipality" id="floating_municipality"
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required
-                           value={userAddressDetails.municipality}
+                           // value={userAddressDetails.municipality}
                            onChange={(e) =>
                            {
-                               onUserAddressChange(e, 'municipality')
+                               // onUserAddressChange(e, 'municipality')
+                               userAddressDetailsRef.current.municipality = e.target.value
                            }}
                     />
                     <label htmlFor="floating_municipality"
@@ -240,10 +270,11 @@ export const Register = () =>
                     <input type="text" name="floating_postcode" id="floating_postcode"
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required
-                           value={userAddressDetails.zipcode}
+                           // value={userAddressDetails.zipcode}
                            onChange={(e) =>
                            {
-                               onUserAddressChange(e, 'zipcode')
+                               // onUserAddressChange(e, 'zipcode')
+                               userAddressDetailsRef.current.zipcode = e.target.value
                            }}
                     />
                     <label htmlFor="floating_postcode"
@@ -254,10 +285,11 @@ export const Register = () =>
                     <input type="text" name="floating_city" id="floating_city"
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required
-                           value={userAddressDetails.city}
+                           // value={userAddressDetails.city}
                            onChange={(e) =>
                            {
-                               onUserAddressChange(e, 'city')
+                               // onUserAddressChange(e, 'city')
+                               userAddressDetailsRef.current.city = e.target.value
                            }}
                     />
                     <label htmlFor="floating_city"
@@ -267,10 +299,11 @@ export const Register = () =>
                     <input type="text" name="floating_street" id="floating_street"
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required
-                           value={userAddressDetails.street}
+                           // value={userAddressDetails.street}
                            onChange={(e) =>
                            {
-                               onUserAddressChange(e, 'street')
+                               // onUserAddressChange(e, 'street')
+                               userAddressDetailsRef.current.street = e.target.value
                            }}
                     />
                     <label htmlFor="floating_street"
@@ -280,10 +313,11 @@ export const Register = () =>
                     <input type="text" name="floating_housenumber" id="floating_housenumber"
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required
-                           value={userAddressDetails.houseNumber}
+                           // value={userAddressDetails.houseNumber}
                            onChange={(e) =>
                            {
-                               onUserAddressChange(e, 'houseNumber', 'number')
+                               // onUserAddressChange(e, 'houseNumber', 'number')
+                               userAddressDetailsRef.current.houseNumber = e.target.value
                            }}
                     />
                     <label htmlFor="floating_housenumber"
@@ -294,10 +328,11 @@ export const Register = () =>
                     <input type="text" name="floating_flatnumber" id="floating_flatnumber"
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required
-                           value={userAddressDetails.apartmentNumber}
+                           // value={userAddressDetails.apartmentNumber}
                            onChange={(e) =>
                            {
-                               onUserAddressChange(e, 'apartmentNumber')
+                               // onUserAddressChange(e, 'apartmentNumber')
+                               userAddressDetailsRef.current.apartmentNumber = e.target.value
                            }}
                     />
                     <label htmlFor="floating_flatnumber"
