@@ -98,18 +98,40 @@ export const Register = () =>
     }
     const isPhoneNumberValid = isValidNumber(userDetails.phone);
 
+    const terms = useRef(false);
+    const termsLabel = useRef();
+
     // sendRegistrationDetails
     const createNewUser = () => {
+        if ( terms.current.checked )
+        {
+            termsLabel.current.classList.remove('text-red-500');
+            const registrationDetails = { ...userDetailsRef.current, ...userAddressDetailsRef.current };
+            registerUser( registrationDetails, (resp) => {
+                if ( resp.success )
+                {
+                    navigate('/')
+                }
+                else
+                {
+                    alert(resp.message);
+                }
+            });
+        }
+        else
+        {
+            termsLabel.current.className += ' text-red-500';
+        }
         // console.log(userDetailsRef.current.user_name)
         // return;
         // console.log(userDetails)
         // console.log(userAddressDetails)
         // const registrationDetails = { ...userDetails, ...userAddressDetails };
-        const registrationDetails = { ...userDetailsRef.current, ...userAddressDetailsRef.current };
+        // const registrationDetails = { ...userDetailsRef.current, ...userAddressDetailsRef.current };
         // console.log(userDetailsRef.current);
         // console.log(userAddressDetailsRef.current);
         // console.log(registrationDetails);
-        registerUser(registrationDetails);
+        // registerUser(registrationDetails);
     }
     const sortedCountries = useMemo( () => {
         return countries.sort(( a, b ) => {
@@ -132,7 +154,7 @@ export const Register = () =>
                     <input type="text" name="floating_username" id="floating_username"
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required
-                           // value={userDetails.user_name}
+                        // value={userDetails.user_name}
                            onChange={(e) =>
                            {
                                // onFieldChange(e, 'user_name')
@@ -145,7 +167,7 @@ export const Register = () =>
                     <input type="password" name="floating_password" id="floating_password"
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required autoComplete="on"
-                           // value={userDetails.password}
+                        // value={userDetails.password}
                            onChange={(e) =>
                            {
                                // onFieldChange(e, 'password')
@@ -159,7 +181,7 @@ export const Register = () =>
                     <input type="email" name="floating_email" id="floating_email"
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required
-                           // value={userDetails.email}
+                        // value={userDetails.email}
                            onChange={(e) =>
                            {
                                // onFieldChange(e, 'email')
@@ -174,7 +196,7 @@ export const Register = () =>
                     <input type="date" name="floating_dob" id="floating_dob"
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required
-                           // value={userDetails.dob}
+                        // value={userDetails.dob}
                            onChange={(e) =>
                            {
                                // onFieldChange(e, 'dob')
@@ -190,7 +212,7 @@ export const Register = () =>
                                isPhoneNumberValid ? '' : 'border-red-500'
                            }`}
                            placeholder=" " required
-                           // value={userDetails.phone}
+                        // value={userDetails.phone}
                            onChange={(e) =>
                            {
                                // onFieldChange(e, 'phone')
@@ -207,7 +229,7 @@ export const Register = () =>
                 <div className="relative z-0 w-full mb-5 group">
                     <select id="floating_countries" name='floating_countries'
                             className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                            // value={userAddressDetails.country}
+                        // value={userAddressDetails.country}
                             onChange={(e) =>
                             {
                                 // onUserAddressChange(e, 'country')
@@ -242,7 +264,7 @@ export const Register = () =>
                     <input type="text" name="floating_county" id="floating_county"
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required
-                           // value={userAddressDetails.county}
+                        // value={userAddressDetails.county}
                            onChange={(e) =>
                            {
                                // onUserAddressChange(e, 'county')
@@ -256,7 +278,7 @@ export const Register = () =>
                     <input type="text" name="floating_municipality" id="floating_municipality"
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required
-                           // value={userAddressDetails.municipality}
+                        // value={userAddressDetails.municipality}
                            onChange={(e) =>
                            {
                                // onUserAddressChange(e, 'municipality')
@@ -270,7 +292,7 @@ export const Register = () =>
                     <input type="text" name="floating_postcode" id="floating_postcode"
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required
-                           // value={userAddressDetails.zipcode}
+                        // value={userAddressDetails.zipcode}
                            onChange={(e) =>
                            {
                                // onUserAddressChange(e, 'zipcode')
@@ -285,7 +307,7 @@ export const Register = () =>
                     <input type="text" name="floating_city" id="floating_city"
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required
-                           // value={userAddressDetails.city}
+                        // value={userAddressDetails.city}
                            onChange={(e) =>
                            {
                                // onUserAddressChange(e, 'city')
@@ -299,7 +321,7 @@ export const Register = () =>
                     <input type="text" name="floating_street" id="floating_street"
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required
-                           // value={userAddressDetails.street}
+                        // value={userAddressDetails.street}
                            onChange={(e) =>
                            {
                                // onUserAddressChange(e, 'street')
@@ -313,7 +335,7 @@ export const Register = () =>
                     <input type="text" name="floating_housenumber" id="floating_housenumber"
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required
-                           // value={userAddressDetails.houseNumber}
+                        // value={userAddressDetails.houseNumber}
                            onChange={(e) =>
                            {
                                // onUserAddressChange(e, 'houseNumber', 'number')
@@ -328,7 +350,7 @@ export const Register = () =>
                     <input type="text" name="floating_flatnumber" id="floating_flatnumber"
                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
                            placeholder=" " required
-                           // value={userAddressDetails.apartmentNumber}
+                        // value={userAddressDetails.apartmentNumber}
                            onChange={(e) =>
                            {
                                // onUserAddressChange(e, 'apartmentNumber')
@@ -341,10 +363,15 @@ export const Register = () =>
                 </div>
                 <div className="flex items-center">
                     <input id="link-checkbox" type="checkbox" required value=""
-                           className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"/>
+                           className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                           ref={terms}
+                    />
                     <label htmlFor="link-checkbox"
-                           className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">I agree with the <a
-                        href="#" className="text-blue-600 dark:text-blue-500 hover:underline">terms and conditions</a>.</label>
+                           ref={termsLabel}
+                           className="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">
+                        I agree with the <a href="#" className="text-blue-600 dark:text-blue-500 hover:underline">terms
+                        and conditions</a>.
+                    </label>
                 </div>
 
                 <button type="button"

@@ -7,6 +7,10 @@ import { Register } from "./components/Register.jsx";
 import { Login } from "./components/Login.jsx";
 import { NotFound } from "./components/NotFound.jsx";
 import { Main } from "./components/Layout/Main.jsx";
+import { AddPcForm } from "./components/AddPc/AddPcForm.jsx";
+import { SinglePcPage } from "./components/SinglePcPage.jsx";
+import { MyComputers } from "./components/MyComputers/MyComputers.jsx";
+import { LoggedIn } from "./components/LoggedIn/LoggedIn.jsx";
 
 const router = createBrowserRouter([
     {
@@ -20,6 +24,18 @@ const router = createBrowserRouter([
     {
         path: "/login",
         element: <Login/>,
+    },
+    {
+        path: "/add-new-pc",
+        element: <LoggedIn><AddPcForm/></LoggedIn>
+    },
+    {
+        path: "pc/:id",
+        element: <LoggedIn><SinglePcPage/></LoggedIn>
+    },
+    {
+        path: "my-computers",
+        element: <LoggedIn><MyComputers/></LoggedIn>,
     },
     {
         path: "*",

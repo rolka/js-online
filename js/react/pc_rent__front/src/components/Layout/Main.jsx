@@ -5,6 +5,7 @@ import { AuthButtons } from "./AuthButtons.jsx";
 import { SinglePc } from "../SinglePc/SinglePc.jsx";
 import { useEffect, useState } from "react";
 import { userLogout, sessionManager } from "../utils/sessionManager.js";
+import { getAllPcs } from "../utils/pcService.js";
 
 export const Main = () =>
 {
@@ -19,6 +20,7 @@ export const Main = () =>
             console.log( `Uer is logged in: ${data.isLoggedIn}` )
             if ( data.isLoggedIn )
             {
+                setIsLoggedIn(true);
                 navigate('/')
             }
             else
@@ -28,6 +30,14 @@ export const Main = () =>
         })
     }, [navigate]);
 
+    const [allPcs, setAllPcs] = useState([]);
+
+    useEffect(() => {
+        getAllPcs((pcs) => {
+            // console.log(pcs);
+            setAllPcs(pcs.all);
+        })
+    }, [] );
     const logoutHandler = () => {
         userLogout((data) => {
             if ( data.success )
@@ -42,12 +52,14 @@ export const Main = () =>
     return (
         <>
             <div className="container mx-auto">
-                <p>Page layout</p>
-                { ! loggedIn && <AuthButtons/>}
+                {/*<p>Page layout</p>*/}
+                {/*{ ! loggedIn && <AuthButtons/>}*/}
+                { ! isLoggedIn && <AuthButtons/>}
                 {/*{loggedIn && (*/}
-                { (
+                { isLoggedIn && (
                     <div className='flex items-center justify-between my-5'>
-                        <Link to='add-new-pc' className='inline-block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800'>Add new PC</Link>
+                        <Link to='/add-new-pc' className='inline-block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800'>Add new PC</Link>
+                        <Link to='/my-computers' className='inline-block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800'>My PCs</Link>
                         <Link className='inline-block text-white bg-orange-500 hover:bg-orange-600 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800'
                               onClick={logoutHandler}
                         >Logout</Link>
@@ -55,12 +67,12 @@ export const Main = () =>
 
                 )}
                 {/*{ loggedIn ? <Register/> : <Login/> }*/}
-
                 <div className='grid grid-cols-3 gap-4'>
-                    <SinglePc/>
-                    <SinglePc/>
-                    <SinglePc/>
-                    <SinglePc/>
+                    {
+                        allPcs.map((pc) => (
+                            <SinglePc pc={pc} key={pc.id}/>
+                        ))
+                    }
                 </div>
 
 

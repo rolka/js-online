@@ -243,7 +243,6 @@ router.post('/register', async (req, res) =>
         await newUser.createClass();
         console.log('======== new user created 400 ========');
         // const userCreated = await newUser.createClass();
-
         // console.log(userCreated)
 
         req.session.user = {
@@ -254,9 +253,12 @@ router.post('/register', async (req, res) =>
         }
         req.session.isLoggedIn = true;
 
+        createdAddressId = null;
+
         res.status(201).json({
             addressCreated: newAddress.getInstance(),
-            userCreated: newUser.getInstance()
+            userCreated: newUser.getInstance(),
+            success: true
         })
     }
     catch ( error )
@@ -266,10 +268,16 @@ router.post('/register', async (req, res) =>
         // if (newAddress && newAddress.id) {
         //     Address.deleteClass(newAddress.id);
         // }
-        await Address.delete(createdAddressId);
+        if ( createdAddressId )
+        {
+            await Address.delete(createdAddressId);
+            createdAddressId = null;
+        }
         // Address.deleteClass(createdAddressId);
         res.status(400).json({
-            error: error
+            error: error,
+            message: 'Registration message occurred',
+            success: false
         })
     }
 })

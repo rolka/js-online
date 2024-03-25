@@ -27,7 +27,7 @@ export const Login = () =>
         loginService( loginDetailsObj, ( data ) => {
             setErrorMessage(data)
             console.log(data);
-            if ( data.status )
+            if ( data.success )
             {
                 navigate('/');
             }

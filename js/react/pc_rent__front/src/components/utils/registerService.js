@@ -1,4 +1,4 @@
-export const registerUser = async ( registrationData ) =>
+export const registerUser = async ( registrationData, callback ) =>
 {
     const promise = await fetch('pc_rent/api/user/register', {
         method: 'post',
@@ -9,5 +9,6 @@ export const registerUser = async ( registrationData ) =>
     });
     const result = await promise.json();
     console.log(result);
-    return result;
+    callback(result);
+    // return result;
 }
